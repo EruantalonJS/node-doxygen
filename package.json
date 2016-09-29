@@ -1,0 +1,25 @@
+{
+  "name": "doxygen",
+  "version": "0.0.1",
+  "author": "EruantalonJS",
+  "description": "gulp plugin for doxygen documentation",
+  "main": "index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EruantalonJS/doxygen.git"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "doxygen",
+    "documentation"
+  ],
+  "dependencies": {
+    "ftp": "~0.3.0",
+    "unzip": "~0.1.11",
+    "extend": "3.0.0"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+  }
+}
