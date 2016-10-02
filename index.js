@@ -16,7 +16,7 @@ function run(userOptions) {
         throw "A valid doxygen config file must be provided via the configPath property";
     } else {
         var dirName = __dirname;
-        exec("'" + dirName + "/dist/" + options.version + "/doxygen' '" + options.configPath + "'");
+        exec("\"" + dirName + "\\dist\\" + options.version + "\\doxygen\" \"" + options.configPath + "\"");
     }
 }
 
