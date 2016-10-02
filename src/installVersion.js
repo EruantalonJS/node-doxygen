@@ -1,23 +1,23 @@
-'use strict';
+"use strict";
 
 module.exports.installVersion = installVersion;
 
-var extend = require('extend');
-var ftp = require('ftp');
-var unzip = require('unzip');
-var fs = require('fs');
+var extend = require("extend");
+var ftp = require("ftp");
+var unzip = require("unzip");
+var fs = require("fs");
 var defaultOptions = {
     hostName:"ftp.stack.nl",
     fileName:"pub/users/dimitri/doxygen-%version%.%os%.%extension%",
     version: "1.8.12",
     os: "windows.x64",
     extension: "bin.zip"
-}
+};
 
 function cbSaveDoxygen(client, outputPath, callBack){
     return function (err, stream) {
         if (err) throw err;
-        stream.once('close', function() { 
+        stream.once("close", function() { 
             client.end(); 
             if(callBack){
                 callBack();
@@ -25,26 +25,28 @@ function cbSaveDoxygen(client, outputPath, callBack){
         });
         stream
         .pipe(unzip.Parse())
-        .on('entry', function (entry) {
-            entry.pipe(fs.createWriteStream(outputPath + '\\' + entry.path));
+        .on("entry", function (entry) {
+            entry.pipe(fs.createWriteStream(outputPath + "\\" + entry.path));
         });
-    }
+    };
 }
 
 function installVersion(userOptions, callBack) {
     var options = extend(defaultOptions, userOptions);
     var dirName = __dirname;
-    var distRoute = dirName + '\\..\\dist';
-    var versionRoute = distRoute + '\\' + options.version;
+    var distRoute = dirName + "\\..\\dist";
+    var versionRoute = distRoute + "\\" + options.version;
     var fileName = options.fileName
         .replace("%version%", options.version)
         .replace("%os%", options.os)
-        .replace("%extension%", options.extension)
+        .replace("%extension%", options.extension);
     var dirExists = false;
     
     try{
         dirExists = fs.statSync(distRoute).isDirectory();
-    } catch (exception) { }
+    } catch (exception) {
+        //if it doesn't exist, swallow the error
+    }
     
     if (!dirExists){
         fs.mkdirSync(distRoute);
@@ -52,14 +54,16 @@ function installVersion(userOptions, callBack) {
     dirExists = false;
 
     try{
-        dirExists = fs.statSync(versionRoute).isDirectory()
-    } catch (exception) { }
+        dirExists = fs.statSync(versionRoute).isDirectory();
+    } catch (exception) {
+        //if it doesn't exist, swallow the error
+    }
     if (!dirExists){
         fs.mkdirSync(versionRoute);
     }
 
     var client = new ftp();
-    client.on('ready', function() {
+    client.on("ready", function() {
         client.get(fileName, cbSaveDoxygen(client,versionRoute,callBack));
     });
 

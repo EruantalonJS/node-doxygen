@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 module.exports.createConfig = createConfig;
 
-var extend = require('extend');
-var fs = require('fs');
+var extend = require("extend");
+var fs = require("fs");
 
 var defaultOptions = {
     DOXYFILE_ENCODING: "UTF-8",
@@ -258,18 +258,18 @@ var defaultOptions = {
     DOT_MULTI_TARGETS: "NO",
     GENERATE_LEGEND: "YES",
     DOT_CLEANUP: "YES"
-}
+};
 
 function createConfig(userOptions) {
     var options = extend(defaultOptions, userOptions);
 
     if (!options.OUTPUT_DIRECTORY) {
-        throw "OUTPUT_DIRECTORY is undefined: A valid output folder must be provided"
+        throw "OUTPUT_DIRECTORY is undefined: A valid output folder must be provided";
     } else if (!options.INPUT) {
-        throw "INPUT is undefined: A valid source file or folder must be provided"
+        throw "INPUT is undefined: A valid source file or folder must be provided";
     } else {
         var dirname = __dirname;
-        var templateConfig = fs.readFileSync(dirname + '/../configTemplate').toString();
+        var templateConfig = fs.readFileSync(dirname + "/../configTemplate").toString();
         var configLines = templateConfig.split("\n");
         for (var configIndex in configLines) {
             var configLine = configLines[configIndex];
