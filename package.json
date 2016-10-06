@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/EruantalonJS/node-doxygen.git"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": [
     "doxygen",
     "documentation"
@@ -16,7 +16,8 @@
   "dependencies": {
     "ftp": "~0.3.0",
     "unzip": "~0.1.11",
-    "extend": "3.0.0"
+    "extend": "3.0.0",
+    "promise": "7.1.1"
   },
   "devDependencies": {
     "eslint": "3.7.0"

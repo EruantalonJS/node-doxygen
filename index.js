@@ -1,27 +1,20 @@
 "use strict";
 
-var installModule = require("./src/installVersion");
-var configModule = require("./src/createConfig");
+var versionModule = require("./src/versionModule");
+var configModule = require("./src/configModule");
 
 var exec = require("child_process").execSync;
-var extend = require("extend");
-var defaultOptions = {
-    version: "1.8.12"
-};
 
-function run(userOptions) {
-    var options = extend(defaultOptions, userOptions);
+function run(configPath, version) {
+    version = version ? version : versionModule.defaultVersion;
+    configPath = configPath ? configPath : configModule.defaultConfigPath;
+    var dirName = __dirname;
 
-    if (!options.configPath) {
-        throw "A valid doxygen config file must be provided via the configPath property";
-    } else {
-        var dirName = __dirname;
-        exec("\"" + dirName + "\\dist\\" + options.version + "\\doxygen\" \"" + options.configPath + "\"");
-    }
+    exec("\"" + dirName + "\\dist\\" + version + "\\doxygen\" \"" + configPath + "\"");
 }
 
 module.exports = {
     run: run,
-    installVersion: installModule.installVersion,
+    installVersion: versionModule.installVersion,
     createConfig: configModule.createConfig
 };
