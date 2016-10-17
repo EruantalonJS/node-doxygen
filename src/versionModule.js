@@ -5,7 +5,6 @@ module.exports.defaultVersion = "1.8.12";
 
 var Promise = require("promise");
 var extend = require("extend");
-var ftp = require("ftp");
 var unzip = require("unzip");
 var fs = require("fs");
 var exec = require("child_process").execSync;
@@ -15,26 +14,29 @@ var defaultOptions = {
     fileName: "pub/users/dimitri/doxygen-%version%.%os%.%extension%",
     version: "1.8.12",
     os: "windows.x64",
-    extension: "bin.zip"
+    extension: "bin.zip",
+    protocol: "ftp"
 };
 
-function cbSaveDoxygen(client, outputPath, callBack) {
-    return function (err, stream) {
-        if (err) throw err;
-        stream.once("close", function () {
-            client.end();
-            cbAfterDownload(outputPath, callBack);
-        });
-        stream
-            .pipe(unzip.Parse())
-            .on("entry", function (entry) {
-                entry.pipe(fs.createWriteStream(outputPath + "\\" + entry.path));
-            });
-    };
+function tryCreateFolder(folderPath) {
+    var dirExists = false;
+    try {
+        dirExists = fs.statSync(folderPath).isDirectory();
+    } catch (exception) {
+        //if it doesn't exist, swallow the error
+    }
+
+    if (!dirExists) {
+        fs.mkdirSync(folderPath);
+    }
 }
 
-function cbAfterDownload(outputPath, callBack) {
-    exec("\"" + outputPath + "\\doxygen\" -s -g \"" + outputPath + "\\sampleConfig\"");
+function createConfigTemplate(outputPath) {
+    try {
+        exec("\"" + outputPath + "\\doxygen\" -s -g \"" + outputPath + "\\sampleConfig\"");
+    } catch (ex) {
+        throw ex;
+    }
 
     var sampleConfig = fs.readFileSync(outputPath + "\\sampleConfig").toString();
     var sampleLines = sampleConfig.split(/\r|\n/);
@@ -65,50 +67,89 @@ function cbAfterDownload(outputPath, callBack) {
 
     fs.writeFileSync(outputPath + "\\templateConfig", templateLines.join("\n"));
     fs.writeFileSync(outputPath + "\\defaultConfig.json", "{\n" + defaultLines.join("\n") + "\"\n}");
-
-    if (callBack) {
-        callBack();
-    }
 }
 
-function installVersion(userOptions, callBack) {
-    var options = extend(defaultOptions, userOptions);
-    var dirName = __dirname;
-    var distRoute = dirName + "\\..\\dist";
-    var versionRoute = distRoute + "\\" + options.version;
-    var fileName = options.fileName
-        .replace("%version%", options.version)
-        .replace("%os%", options.os)
-        .replace("%extension%", options.extension);
-    var dirExists = false;
-
-    try {
-        dirExists = fs.statSync(distRoute).isDirectory();
-    } catch (exception) {
-        //if it doesn't exist, swallow the error
-    }
-
-    if (!dirExists) {
-        fs.mkdirSync(distRoute);
-    }
-    dirExists = false;
-
-    try {
-        dirExists = fs.statSync(versionRoute).isDirectory();
-    } catch (exception) {
-        //if it doesn't exist, swallow the error
-    }
-    if (!dirExists) {
-        fs.mkdirSync(versionRoute);
-    }
-
-    var client = new ftp();
-    client.on("ready", function () {
-        client.get(fileName, cbSaveDoxygen(client, versionRoute, callBack));
-    });
+function ftpDownload(options) {
+    var ftp = require("ftp");
 
     var ftpConfig = {
         host: options.hostName
     };
-    client.connect(ftpConfig);
+
+    return new Promise(function (resolve, reject) {
+        var client = new ftp();
+
+        function afterGet(err, stream) {
+            if (err) {
+                reject(err);
+            } else {
+                stream.once('close', function () {
+                    client.end();
+                });
+                resolve(stream);
+            }
+        }
+
+        client.on("ready", function () {
+            client.get(options.fileName, afterGet)
+        });
+
+        client.on("error", function () {
+            client.get(options.fileName, afterGet)
+        });
+
+        client.connect(ftpConfig);
+    })
+}
+
+function httpDownload(options) {
+    var http = require("http");
+    return new Promise(function (resolve, reject) {
+        http.get("http://" + options.hostName + "/" + options.fileName, function (response) {
+            resolve(response);
+        }).on("error", function (e) {
+            reject("Request error: " + e.message);
+        });
+    })
+}
+
+function installVersion(userOptions) {
+    return new Promise(function (resolve, reject) {
+
+        var options = extend(defaultOptions, userOptions);
+        options.fileName = options.fileName
+            .replace("%version%", options.version)
+            .replace("%os%", options.os)
+            .replace("%extension%", options.extension);
+
+        //create directories if necessary
+
+        var dirName = __dirname;
+        var distRoute = dirName + "\\..\\dist";
+        var versionRoute = distRoute + "\\" + options.version;
+        tryCreateFolder(distRoute);
+        tryCreateFolder(versionRoute);
+
+        var dataPromise;
+
+        if (options.protocol == 'http') {
+            dataPromise = httpDownload(options);
+        } else {
+            dataPromise = ftpDownload(options);
+        }
+
+        dataPromise.then(function (stream) {
+
+            stream.pipe(unzip.Parse())
+                .on("entry", function (entry) {
+                    entry.pipe(fs.createWriteStream(versionRoute + "\\" + entry.path));
+                })
+                .on("close", function (entry) {
+                    createConfigTemplate(versionRoute);
+                    resolve();
+                });
+        }, function (error) {
+            reject(error);
+        });
+    });
 }

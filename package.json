@@ -1,6 +1,6 @@
 {
   "name": "doxygen",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "EruantalonJS",
   "description": "node module for doxygen documentation",
   "main": "index",
@@ -13,6 +13,9 @@
     "doxygen",
     "documentation"
   ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "dependencies": {
     "ftp": "~0.3.0",
     "unzip": "~0.1.11",
@@ -20,9 +23,11 @@
     "promise": "7.1.1"
   },
   "devDependencies": {
-    "eslint": "3.7.0"
+    "eslint": "~3.7.0",
+    "jasmine": "~2.5.2"
   },
   "scripts": {
-    "travisBuild": "eslint './'"
+    "lint": "eslint './'",
+    "test": "jasmine"
   }
 }

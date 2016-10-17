@@ -3,31 +3,57 @@ doxygen
 
 Node plugin for building [Doxygen](www.doxygen.org) documentation.
 
-This module is not related with [Doxygen](www.doxygen.org)
+This module is not associated with [Doxygen](www.doxygen.org)
 ##Setup
 
 `npm install doxygen`
 
+##Current version: 0.1.0
+
+This module automates the installation and generation of doxygen documentation so that it can be easily included as a build step
+
 ##About this module
 
-This module is in its first stages and lacking important features.
+This module is still a work in progress 
 
-This are some of the goals for next releases:
+0.1.1 goals:
 
-  - Automated tests and builds
-  - Improve and test the support for older versions
+  - Get the module to work in older (<4.x) node versions
+  - Linux compatibility
 
-##Example of use
+##Examples of use
+
+Install the latest doxygen version from the default repository
+
+```javascript
 
 var doxygen = require('doxygen');
-
-doxygen.installVersion(null, function () {
-
-    doxygen.createConfig(
-        {
-            OUTPUT_DIRECTORY: "C:/DoxygenOutput",
-            INPUT: "c:/MyProject",
-            EXCLUDE: "c:/MyProject/node_modules"
-        });
-    doxygen.run();
+doxygen.installVersion().then(function (data) {
+        doSomething();
 });
+
+```
+
+Create a config file with some custom properties
+
+```javascript
+
+var doxygen = require('doxygen');
+var userOptions = {
+    OUTPUT_DIRECTORY: "testDocs",
+    INPUT: "./",
+    RECURSIVE: "YES",
+    EXCLUDE_PATTERNS: "*/node_modules/*"
+};
+doxygen.createConfig(userOptions);
+
+```
+
+Generate the documentation
+
+```javascript
+
+var doxygen = require('doxygen');
+doxygen.run();
+
+```
