@@ -3,18 +3,39 @@
 module.exports.installVersion = installVersion;
 module.exports.defaultVersion = "1.8.12";
 
-var Promise = require("promise");
+var toArray = require("stream-to-array");
 var extend = require("extend");
-var unzip = require("unzip");
+var decompress = require("decompress");
 var fs = require("fs");
+var path = require("path");
 var exec = require("child_process").execSync;
+
+var platform;
+var extension;
+
+if (process.platform == "freebsd") {
+    throw "OS not supported by doxygen";
+} else if (process.platform == "linux") {
+    platform = "linux";
+    extension = "bin.tar.gz";
+} else if (process.platform == "sunos") {
+    platform = "solaris";
+    extension = "bin.tar.gz";
+} else if (process.platform == "win32") {
+    extension = "bin.zip";
+    if (process.arch == "x64") {
+        platform = "windows.x64";
+    } else {
+        platform = "windows";
+    }
+}
 
 var defaultOptions = {
     hostName: "ftp.stack.nl",
     fileName: "pub/users/dimitri/doxygen-%version%.%os%.%extension%",
     version: "1.8.12",
-    os: "windows.x64",
-    extension: "bin.zip",
+    os: platform,
+    extension: extension,
     protocol: "ftp"
 };
 
@@ -32,13 +53,17 @@ function tryCreateFolder(folderPath) {
 }
 
 function createConfigTemplate(outputPath) {
+    var doxygenPath = path.normalize(outputPath + "/doxygen");
+    var sampleConfigPath = path.normalize(outputPath + "/sampleConfig");
+    var templateConfigPath = path.normalize(outputPath + "/templateConfig");
+    var defaultConfigPath = path.normalize(outputPath + "/defaultConfig.json");
     try {
-        exec("\"" + outputPath + "\\doxygen\" -s -g \"" + outputPath + "\\sampleConfig\"");
+        exec("\"" + doxygenPath + "\" -s -g \"" + sampleConfigPath + "\"");
     } catch (ex) {
         throw ex;
     }
 
-    var sampleConfig = fs.readFileSync(outputPath + "\\sampleConfig").toString();
+    var sampleConfig = fs.readFileSync(sampleConfigPath).toString();
     var sampleLines = sampleConfig.split(/\r|\n/);
     var templateLines = [];
     var defaultLines = [];
@@ -65,8 +90,8 @@ function createConfigTemplate(outputPath) {
         }
     }
 
-    fs.writeFileSync(outputPath + "\\templateConfig", templateLines.join("\n"));
-    fs.writeFileSync(outputPath + "\\defaultConfig.json", "{\n" + defaultLines.join("\n") + "\"\n}");
+    fs.writeFileSync(templateConfigPath, templateLines.join("\n"));
+    fs.writeFileSync(defaultConfigPath, "{\n" + defaultLines.join("\n") + "\"\n}");
 }
 
 function ftpDownload(options) {
@@ -83,7 +108,7 @@ function ftpDownload(options) {
             if (err) {
                 reject(err);
             } else {
-                stream.once('close', function () {
+                stream.once("close", function () {
                     client.end();
                 });
                 resolve(stream);
@@ -91,15 +116,15 @@ function ftpDownload(options) {
         }
 
         client.on("ready", function () {
-            client.get(options.fileName, afterGet)
+            client.get(options.fileName, afterGet);
         });
 
-        client.on("error", function () {
-            client.get(options.fileName, afterGet)
+        client.on("error", function (error) {
+            reject(error);
         });
 
         client.connect(ftpConfig);
-    })
+    });
 }
 
 function httpDownload(options) {
@@ -110,7 +135,7 @@ function httpDownload(options) {
         }).on("error", function (e) {
             reject("Request error: " + e.message);
         });
-    })
+    });
 }
 
 function installVersion(userOptions) {
@@ -125,28 +150,47 @@ function installVersion(userOptions) {
         //create directories if necessary
 
         var dirName = __dirname;
-        var distRoute = dirName + "\\..\\dist";
-        var versionRoute = distRoute + "\\" + options.version;
+        var distRoute = dirName + "/../dist";
+        var versionRoute = distRoute + "/" + options.version;
         tryCreateFolder(distRoute);
         tryCreateFolder(versionRoute);
 
         var dataPromise;
 
-        if (options.protocol == 'http') {
+        if (options.protocol == "http") {
             dataPromise = httpDownload(options);
         } else {
             dataPromise = ftpDownload(options);
         }
 
         dataPromise.then(function (stream) {
-
-            stream.pipe(unzip.Parse())
-                .on("entry", function (entry) {
-                    entry.pipe(fs.createWriteStream(versionRoute + "\\" + entry.path));
-                })
-                .on("close", function (entry) {
-                    createConfigTemplate(versionRoute);
-                    resolve();
+            toArray(stream)
+                .then(function (parts) {
+                    var buffers = [];
+                    for (var i = 0, l = parts.length; i < l; ++i) {
+                        var part = parts[i];
+                        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
+                    }
+                    return Buffer.concat(buffers);
+                }).then(function (buffer) {
+                    decompress(buffer, versionRoute, {
+                        filter: function(file){
+                            return file.path.endsWith("doxygen") ||
+                            file.path.endsWith("doxygen.exe") ||
+                            file.path.endsWith("doxyindexer") ||
+                            file.path.endsWith("doxyindexer.exe") ||
+                            file.path.endsWith("doxysearch.cgi.exe") ||
+                            file.path.endsWith("doxysearch.cgi") ||
+                            file.path.endsWith("libclang.dll");
+                        },
+                        map: function(file){
+                            file.path = file.path.substring(file.path.lastIndexOf("/")+1);
+                            return file;
+                        }
+                    }).then(function () {
+                        createConfigTemplate(versionRoute);
+                        resolve();
+                    }); 
                 });
         }, function (error) {
             reject(error);
