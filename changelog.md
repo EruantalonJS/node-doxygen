@@ -8,3 +8,11 @@ Added support for http download
 Implemented generic templates
 Breaking change: Install version now returns a promise
 Added appveyor build to test the module on a windows environment
+
+##0.1.1
+
+Linux support
+
+##0.1.2
+
+MacOS support

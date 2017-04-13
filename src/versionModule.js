@@ -5,7 +5,6 @@ module.exports.defaultVersion = "1.8.12";
 
 var toArray = require("stream-to-array");
 var extend = require("extend");
-var decompress = require("decompress");
 var fs = require("fs");
 var path = require("path");
 var exec = require("child_process").execSync;
@@ -15,24 +14,27 @@ var extension;
 
 if (process.platform == "freebsd") {
     throw "OS not supported by doxygen";
-} else if (process.platform == "linux") {
-    platform = "linux";
-    extension = "bin.tar.gz";
+} else if (process.platform == "darwin") {
+    platform = "";
+    extension = ".dmg";
+}else if (process.platform == "linux") {
+    platform = ".linux";
+    extension = ".bin.tar.gz";
 } else if (process.platform == "sunos") {
-    platform = "solaris";
-    extension = "bin.tar.gz";
+    platform = ".solaris";
+    extension = ".bin.tar.gz";
 } else if (process.platform == "win32") {
-    extension = "bin.zip";
+    extension = ".bin.zip";
     if (process.arch == "x64") {
-        platform = "windows.x64";
+        platform = ".windows.x64";
     } else {
-        platform = "windows";
+        platform = ".windows";
     }
 }
 
 var defaultOptions = {
     hostName: "ftp.stack.nl",
-    fileName: "pub/users/dimitri/doxygen-%version%.%os%.%extension%",
+    fileName: "pub/users/dimitri/doxygen-%version%%os%%extension%",
     version: "1.8.12",
     os: platform,
     extension: extension,
@@ -138,62 +140,75 @@ function httpDownload(options) {
     });
 }
 
+function arrayToBuffer(parts) {
+    var buffers = [];
+    for (var i = 0, l = parts.length; i < l; ++i) {
+        var part = parts[i];
+        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
+    }
+    return Buffer.concat(buffers);
+}
+
+function unCompressFiles(versionRoute, isOSX) {
+    if (isOSX) {
+        // TODO
+        return true;
+    }
+    else {
+        var decompress = require("decompress");
+        return function (buffer) {
+            return decompress(buffer, versionRoute, {
+                filter: function (file) {
+                    return file.path.endsWith("doxygen") ||
+                        file.path.endsWith("doxygen.exe") ||
+                        file.path.endsWith("doxyindexer") ||
+                        file.path.endsWith("doxyindexer.exe") ||
+                        file.path.endsWith("doxysearch.cgi.exe") ||
+                        file.path.endsWith("doxysearch.cgi") ||
+                        file.path.endsWith("libclang.dll");
+                },
+                map: function (file) {
+                    file.path = file.path.substring(file.path.lastIndexOf("/") + 1);
+                    return file;
+                }
+            });
+        };
+    }
+}
+
 function installVersion(userOptions) {
-    return new Promise(function (resolve, reject) {
 
-        var options = extend(defaultOptions, userOptions);
-        options.fileName = options.fileName
-            .replace("%version%", options.version)
-            .replace("%os%", options.os)
-            .replace("%extension%", options.extension);
+    var options = extend(defaultOptions, userOptions);
+    options.fileName = options.fileName
+        .replace("%version%", options.version)
+        .replace("%os%", options.os)
+        .replace("%extension%", options.extension);
 
-        //create directories if necessary
+    //create directories if necessary
 
-        var dirName = __dirname;
-        var distRoute = dirName + "/../dist";
-        var versionRoute = distRoute + "/" + options.version;
-        tryCreateFolder(distRoute);
-        tryCreateFolder(versionRoute);
+    var dirName = __dirname;
+    var distRoute = dirName + "/../dist";
+    var versionRoute = distRoute + "/" + options.version;
+    tryCreateFolder(distRoute);
+    tryCreateFolder(versionRoute);
 
-        var dataPromise;
+    var dataPromise;
 
-        if (options.protocol == "http") {
-            dataPromise = httpDownload(options);
-        } else {
-            dataPromise = ftpDownload(options);
-        }
+    if (options.protocol == "http") {
+        dataPromise = httpDownload(options);
+    } else {
+        dataPromise = ftpDownload(options);
+    }
 
-        dataPromise.then(function (stream) {
-            toArray(stream)
-                .then(function (parts) {
-                    var buffers = [];
-                    for (var i = 0, l = parts.length; i < l; ++i) {
-                        var part = parts[i];
-                        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
-                    }
-                    return Buffer.concat(buffers);
-                }).then(function (buffer) {
-                    decompress(buffer, versionRoute, {
-                        filter: function(file){
-                            return file.path.endsWith("doxygen") ||
-                            file.path.endsWith("doxygen.exe") ||
-                            file.path.endsWith("doxyindexer") ||
-                            file.path.endsWith("doxyindexer.exe") ||
-                            file.path.endsWith("doxysearch.cgi.exe") ||
-                            file.path.endsWith("doxysearch.cgi") ||
-                            file.path.endsWith("libclang.dll");
-                        },
-                        map: function(file){
-                            file.path = file.path.substring(file.path.lastIndexOf("/")+1);
-                            return file;
-                        }
-                    }).then(function () {
-                        createConfigTemplate(versionRoute);
-                        resolve();
-                    }); 
-                });
-        }, function (error) {
-            reject(error);
-        });
+    return dataPromise.then(function (stream) {
+        return toArray(stream)
+            .then(arrayToBuffer)
+            .then(unCompressFiles(versionRoute, options.os == ""))
+            .then(function () {
+                createConfigTemplate(versionRoute);
+                return;
+            });
+    }, function (error) {
+        return error;
     });
 }
