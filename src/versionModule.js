@@ -169,7 +169,7 @@ function mountDMG(dmgFilePath) {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(path)
+                    resolve(path);
                 }
             });
         }
@@ -182,51 +182,49 @@ function mountDMG(dmgFilePath) {
 function copyFile(source, target) {
     return new Promise(function (resolve, reject) {
         var rd = fs.createReadStream(source);
-        rd.on('error', rejectCleanup);
+        rd.on("error", rejectCleanup);
         var wr = fs.createWriteStream(target);
-        wr.on('error', rejectCleanup);
+        wr.on("error", rejectCleanup);
         function rejectCleanup(err) {
             rd.destroy();
             wr.end();
             reject(err);
         }
-        wr.on('finish', resolve);
+        wr.on("finish", resolve);
         rd.pipe(wr);
     });
 }
 
-function unCompressFiles(versionRoute, isOSX) {
-    return function (buffer) {
-        if (isOSX) {
-            return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
-                function () {
-                    return mountDMG(versionRoute + "/doxygen" + defaultOptions.extension).then(
-                        function (path) {
-                            return copyFile(path + "/doxygen", versionRoute)
-                        }
-                    )
-                }
-            )
-        }
-        else {
-            var decompress = require("decompress");
-            return decompress(buffer, versionRoute, {
-                filter: function (file) {
-                    return file.path.endsWith("doxygen") ||
-                        file.path.endsWith("doxygen.exe") ||
-                        file.path.endsWith("doxyindexer") ||
-                        file.path.endsWith("doxyindexer.exe") ||
-                        file.path.endsWith("doxysearch.cgi.exe") ||
-                        file.path.endsWith("doxysearch.cgi") ||
-                        file.path.endsWith("libclang.dll");
-                },
-                map: function (file) {
-                    file.path = file.path.substring(file.path.lastIndexOf("/") + 1);
-                    return file;
-                }
-            });
-        }
-    };
+function unCompressFiles(buffer, versionRoute, isOSX) {
+    if (isOSX) {
+        return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
+            function () {
+                return mountDMG(versionRoute + "/doxygen" + defaultOptions.extension).then(
+                    function (path) {
+                        return copyFile(path + "/doxygen", versionRoute);
+                    }
+                );
+            }
+        );
+    }
+    else {
+        var decompress = require("decompress");
+        return decompress(buffer, versionRoute, {
+            filter: function (file) {
+                return file.path.endsWith("doxygen") ||
+                    file.path.endsWith("doxygen.exe") ||
+                    file.path.endsWith("doxyindexer") ||
+                    file.path.endsWith("doxyindexer.exe") ||
+                    file.path.endsWith("doxysearch.cgi.exe") ||
+                    file.path.endsWith("doxysearch.cgi") ||
+                    file.path.endsWith("libclang.dll");
+            },
+            map: function (file) {
+                file.path = file.path.substring(file.path.lastIndexOf("/") + 1);
+                return file;
+            }
+        });
+    }
 }
 
 function installVersion(userOptions) {
@@ -253,15 +251,13 @@ function installVersion(userOptions) {
         dataPromise = ftpDownload(options);
     }
 
-    return dataPromise.then(function (stream) {
-        return toArray(stream)
-            .then(arrayToBuffer)
-            .then(unCompressFiles(versionRoute, options.os == ""))
-            .then(function () {
-                createConfigTemplate(versionRoute);
-                return;
-            });
-    }, function (error) {
-        return error;
-    });
+    return dataPromise.then(toArray)
+        .then(arrayToBuffer)
+        .then(function (buffer) {
+            return unCompressFiles(buffer, versionRoute, options.os == "");
+        })
+        .then(function () {
+            createConfigTemplate(versionRoute);
+            return;
+        });
 }

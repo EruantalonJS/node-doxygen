@@ -12,15 +12,6 @@ This module is not associated with [Doxygen](www.doxygen.org)
 
 This module automates the installation and generation of doxygen documentation so that it can be easily included as a build step
 
-##About this module
-
-This module is still a work in progress 
-
-0.1.1 goals:
-
-  - Get the module to work in older (<4.x) node versions
-  - Linux compatibility
-
 ##Examples of use
 
 Install the latest doxygen version from the default repository
