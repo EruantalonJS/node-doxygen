@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "ftp": "~0.3.0",
+    "dmg": "~0.1.0",
     "decompress": "~4.0.0",
     "extend": "~3.0.0",
     "stream-to-array": "~2.3.0"

@@ -17,7 +17,7 @@ if (process.platform == "freebsd") {
 } else if (process.platform == "darwin") {
     platform = "";
     extension = ".dmg";
-}else if (process.platform == "linux") {
+} else if (process.platform == "linux") {
     platform = ".linux";
     extension = ".bin.tar.gz";
 } else if (process.platform == "sunos") {
@@ -149,14 +149,67 @@ function arrayToBuffer(parts) {
     return Buffer.concat(buffers);
 }
 
+function bufferToFile(buffer, filePath) {
+    return new Promise(function (resolve, reject) {
+        fs.writeFile(filePath, buffer, "binary", function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+function mountDMG(dmgFilePath) {
+    var dmg = require("dmg");
+    return new Promise(function (resolve, reject) {
+        try {
+            dmg.mount(dmgFilePath, function (error, path) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(path)
+                }
+            });
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function copyFile(source, target) {
+    return new Promise(function (resolve, reject) {
+        var rd = fs.createReadStream(source);
+        rd.on('error', rejectCleanup);
+        var wr = fs.createWriteStream(target);
+        wr.on('error', rejectCleanup);
+        function rejectCleanup(err) {
+            rd.destroy();
+            wr.end();
+            reject(err);
+        }
+        wr.on('finish', resolve);
+        rd.pipe(wr);
+    });
+}
+
 function unCompressFiles(versionRoute, isOSX) {
-    if (isOSX) {
-        // TODO
-        return true;
-    }
-    else {
-        var decompress = require("decompress");
-        return function (buffer) {
+    return function (buffer) {
+        if (isOSX) {
+            return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
+                function () {
+                    return mountDMG(versionRoute + "/doxygen" + defaultOptions.extension).then(
+                        function (path) {
+                            return copyFile(path + "/doxygen", versionRoute)
+                        }
+                    )
+                }
+            )
+        }
+        else {
+            var decompress = require("decompress");
             return decompress(buffer, versionRoute, {
                 filter: function (file) {
                     return file.path.endsWith("doxygen") ||
@@ -172,8 +225,8 @@ function unCompressFiles(versionRoute, isOSX) {
                     return file;
                 }
             });
-        };
-    }
+        }
+    };
 }
 
 function installVersion(userOptions) {
