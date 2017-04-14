@@ -1,28 +1,32 @@
 "use strict";
 
 module.exports.installVersion = installVersion;
-module.exports.defaultVersion = "1.8.12";
+module.exports.defaultVersion = "1.8.13";
 
 var toArray = require("stream-to-array");
 var extend = require("extend");
-var decompress = require("decompress");
-var fs = require("fs");
+var fs = require("fs-extra");
 var path = require("path");
 var exec = require("child_process").execSync;
 
 var platform;
 var extension;
+var modelName = "pub/users/dimitri/doxygen-%version%.%os%%extension%";
 
 if (process.platform == "freebsd") {
     throw "OS not supported by doxygen";
+} else if (process.platform == "darwin") {
+    modelName = "pub/users/dimitri/Doxygen-%version%%extension%";
+    platform = "macOS";
+    extension = ".dmg";
 } else if (process.platform == "linux") {
     platform = "linux";
-    extension = "bin.tar.gz";
+    extension = ".bin.tar.gz";
 } else if (process.platform == "sunos") {
     platform = "solaris";
-    extension = "bin.tar.gz";
+    extension = ".bin.tar.gz";
 } else if (process.platform == "win32") {
-    extension = "bin.zip";
+    extension = ".bin.zip";
     if (process.arch == "x64") {
         platform = "windows.x64";
     } else {
@@ -32,8 +36,8 @@ if (process.platform == "freebsd") {
 
 var defaultOptions = {
     hostName: "ftp.stack.nl",
-    fileName: "pub/users/dimitri/doxygen-%version%.%os%.%extension%",
-    version: "1.8.12",
+    fileName: modelName,
+    version: module.exports.defaultVersion,
     os: platform,
     extension: extension,
     protocol: "ftp"
@@ -53,7 +57,12 @@ function tryCreateFolder(folderPath) {
 }
 
 function createConfigTemplate(outputPath) {
-    var doxygenPath = path.normalize(outputPath + "/doxygen");
+    var doxygenFolder = "";
+    if (process.platform == "darwin") {
+        doxygenFolder = "/doxygen.app/Contents/Resources";
+    }
+
+    var doxygenPath = path.normalize(outputPath + doxygenFolder + "/doxygen");
     var sampleConfigPath = path.normalize(outputPath + "/sampleConfig");
     var templateConfigPath = path.normalize(outputPath + "/templateConfig");
     var defaultConfigPath = path.normalize(outputPath + "/defaultConfig.json");
@@ -138,62 +147,123 @@ function httpDownload(options) {
     });
 }
 
-function installVersion(userOptions) {
+function arrayToBuffer(parts) {
+    var buffers = [];
+    for (var i = 0, l = parts.length; i < l; ++i) {
+        var part = parts[i];
+        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
+    }
+    return Buffer.concat(buffers);
+}
+
+function bufferToFile(buffer, filePath) {
     return new Promise(function (resolve, reject) {
-
-        var options = extend(defaultOptions, userOptions);
-        options.fileName = options.fileName
-            .replace("%version%", options.version)
-            .replace("%os%", options.os)
-            .replace("%extension%", options.extension);
-
-        //create directories if necessary
-
-        var dirName = __dirname;
-        var distRoute = dirName + "/../dist";
-        var versionRoute = distRoute + "/" + options.version;
-        tryCreateFolder(distRoute);
-        tryCreateFolder(versionRoute);
-
-        var dataPromise;
-
-        if (options.protocol == "http") {
-            dataPromise = httpDownload(options);
-        } else {
-            dataPromise = ftpDownload(options);
-        }
-
-        dataPromise.then(function (stream) {
-            toArray(stream)
-                .then(function (parts) {
-                    var buffers = [];
-                    for (var i = 0, l = parts.length; i < l; ++i) {
-                        var part = parts[i];
-                        buffers.push((part instanceof Buffer) ? part : new Buffer(part));
-                    }
-                    return Buffer.concat(buffers);
-                }).then(function (buffer) {
-                    decompress(buffer, versionRoute, {
-                        filter: function(file){
-                            return file.path.endsWith("doxygen") ||
-                            file.path.endsWith("doxygen.exe") ||
-                            file.path.endsWith("doxyindexer") ||
-                            file.path.endsWith("doxyindexer.exe") ||
-                            file.path.endsWith("doxysearch.cgi.exe") ||
-                            file.path.endsWith("doxysearch.cgi") ||
-                            file.path.endsWith("libclang.dll");
-                        },
-                        map: function(file){
-                            file.path = file.path.substring(file.path.lastIndexOf("/")+1);
-                            return file;
-                        }
-                    }).then(function () {
-                        createConfigTemplate(versionRoute);
-                        resolve();
-                    }); 
-                });
-        }, function (error) {
-            reject(error);
+        fs.writeFile(filePath, buffer, "binary", function (error) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
         });
     });
+}
+
+function copyFileFromDmg(dmgFilePath, target) {
+    return new Promise(function (resolve, reject) {
+        var dmgMounted;
+
+        //Mount the dmg
+        var dmg = require("dmg");
+        dmg.mount(dmgFilePath, function (error, path) {
+            if (error) {
+                rejectCleanup(error);
+            } else {
+                dmgMounted = path;
+            }
+
+            try {
+                fs.copySync(dmgMounted + "/Doxygen.app", target);
+            } catch (error) {
+                rejectCleanup(error);
+            }
+
+            dmg.unmount(dmgMounted, function () {
+                resolve();
+            });
+        });
+
+        function rejectCleanup(error) {
+            if (dmgMounted) {
+                dmg.unmount(dmgMounted, function () {
+                    reject(error);
+                });
+            }
+            else {
+                reject(error);
+            }
+        }
+    });
+}
+
+function unCompressFiles(buffer, versionRoute, isOSX) {
+    if (isOSX) {
+        return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
+            function () {
+                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension, versionRoute + "/doxygen.app");
+            }
+        );
+    }
+    else {
+        var decompress = require("decompress");
+        return decompress(buffer, versionRoute, {
+            filter: function (file) {
+                return file.path.endsWith("doxygen") ||
+                    file.path.endsWith("doxygen.exe") ||
+                    file.path.endsWith("doxyindexer") ||
+                    file.path.endsWith("doxyindexer.exe") ||
+                    file.path.endsWith("doxysearch.cgi.exe") ||
+                    file.path.endsWith("doxysearch.cgi") ||
+                    file.path.endsWith("libclang.dll");
+            },
+            map: function (file) {
+                file.path = file.path.substring(file.path.lastIndexOf("/") + 1);
+                return file;
+            }
+        });
+    }
+}
+
+function installVersion(userOptions) {
+
+    var options = extend(defaultOptions, userOptions);
+    options.fileName = options.fileName
+        .replace("%version%", options.version)
+        .replace("%os%", options.os)
+        .replace("%extension%", options.extension);
+
+    //create directories if necessary
+
+    var dirName = __dirname;
+    var distRoute = dirName + "/../dist";
+    var versionRoute = distRoute + "/" + options.version;
+    tryCreateFolder(distRoute);
+    tryCreateFolder(versionRoute);
+
+    var dataPromise;
+
+    if (options.protocol == "http") {
+        dataPromise = httpDownload(options);
+    } else {
+        dataPromise = ftpDownload(options);
+    }
+
+    return dataPromise.then(toArray)
+        .then(arrayToBuffer)
+        .then(function (buffer) {
+            return unCompressFiles(buffer, versionRoute, options.os == "macOS");
+        })
+        .then(function () {
+            createConfigTemplate(versionRoute);
+            return;
+        });
 }
