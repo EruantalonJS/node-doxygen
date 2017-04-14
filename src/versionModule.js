@@ -57,7 +57,12 @@ function tryCreateFolder(folderPath) {
 }
 
 function createConfigTemplate(outputPath) {
-    var doxygenPath = path.normalize(outputPath + "/doxygen");
+    var doxygenFolder = "";
+    if (process.platform == "darwin") {
+        doxygenFolder = "/doxygen.app/Contents/Resources";
+    }
+
+    var doxygenPath = path.normalize(outputPath + doxygenFolder + "/doxygen");
     var sampleConfigPath = path.normalize(outputPath + "/sampleConfig");
     var templateConfigPath = path.normalize(outputPath + "/templateConfig");
     var defaultConfigPath = path.normalize(outputPath + "/defaultConfig.json");
