@@ -5,7 +5,7 @@ module.exports.defaultVersion = "1.8.13";
 
 var toArray = require("stream-to-array");
 var extend = require("extend");
-var fs = require("fs");
+var fs = require("fs-extra");
 var path = require("path");
 var exec = require("child_process").execSync;
 
@@ -165,8 +165,6 @@ function bufferToFile(buffer, filePath) {
 
 function copyFileFromDmg(dmgFilePath, target) {
     return new Promise(function (resolve, reject) {
-        var readStream;
-        var writeStream;
         var dmgMounted;
 
         //Mount the dmg
@@ -178,24 +176,26 @@ function copyFileFromDmg(dmgFilePath, target) {
                 dmgMounted = path;
             }
 
-            readStream = fs.createReadStream(dmgMounted + "/doxygen");
-            readStream.on("error", rejectCleanup);
-            writeStream = fs.createWriteStream(target);
-            writeStream.on("error", rejectCleanup);
-            writeStream.on("finish", function () {
-                dmg.unmount(dmgFilePath, function () {
-                    resolve();
-                });
-            });
-            readStream.pipe(writeStream);
+            try {
+                readStream = fs.copySync(dmgMounted + "/Doxygen.app", target);
+            } catch (error) {
+                rejectCleanup(error);
+            }
 
+            dmg.unmount(dmgMounted, function () {
+                resolve();
+            });
         });
 
         function rejectCleanup(error) {
-            readStream && readStream.destroy();
-            writeStream && writeStream.end();
-            dmgMounted && dmg.unmount(dmgFilePath);
-            reject(error);
+            if (dmgMounted) {
+                dmg.unmount(dmgMounted, function () {
+                    reject(error);
+                });
+            }
+            else {
+                reject(error);
+            }
         }
     });
 }
@@ -204,7 +204,7 @@ function unCompressFiles(buffer, versionRoute, isOSX) {
     if (isOSX) {
         return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
             function () {
-                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension, versionRoute + "/doxygen");
+                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension, versionRoute + "/doxygen.app");
             }
         );
     }

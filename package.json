@@ -1,6 +1,6 @@
 {
   "name": "doxygen",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "EruantalonJS",
   "description": "node module for doxygen documentation",
   "main": "index",
@@ -21,7 +21,8 @@
     "dmg": "~0.1.0",
     "decompress": "~4.0.0",
     "extend": "~3.0.0",
-    "stream-to-array": "~2.3.0"
+    "stream-to-array": "~2.3.0",
+    "fs-extra": "~2.1.2"
   },
   "devDependencies": {
     "eslint": "~3.7.0",
