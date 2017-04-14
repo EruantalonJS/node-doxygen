@@ -2,9 +2,7 @@ doxygen
 ===========
 
 [![npm Package](https://img.shields.io/npm/v/doxygen.svg?style=flat-square)](https://www.npmjs.org/package/doxygen)
-
 [![Build Status](https://travis-ci.org/EruantalonJS/node-doxygen.svg?branch=master)](https://travis-ci.org/EruantalonJS/node-doxygen)
-
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/xu8avh9iguwey4yh?svg=true)](https://ci.appveyor.com/project/EruantalonJS/node-doxygen)
 
 Node wrapper for building [Doxygen](www.doxygen.org) documentation.
@@ -14,9 +12,7 @@ This module is not associated with [Doxygen](www.doxygen.org)
 
 `npm install doxygen`
 
-##Current version: 0.1.2
-
-This module automates the installation and generation of doxygen documentation so that it can be easily included as a build step
+This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS
 
 ##Examples of use
 

@@ -177,7 +177,7 @@ function copyFileFromDmg(dmgFilePath, target) {
             }
 
             try {
-                readStream = fs.copySync(dmgMounted + "/Doxygen.app", target);
+                fs.copySync(dmgMounted + "/Doxygen.app", target);
             } catch (error) {
                 rejectCleanup(error);
             }

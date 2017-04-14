@@ -3,7 +3,7 @@ describe("Doxygen version installer", function () {
     var rimraf = require("rimraf");
 
     beforeEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 240000;
     });
     it("Installs from ftp", function (done) {
         rimraf("dist", function () {
