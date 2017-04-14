@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports.installVersion = installVersion;
-module.exports.defaultVersion = "1.8.12";
+module.exports.defaultVersion = "1.8.13";
 
 var toArray = require("stream-to-array");
 var extend = require("extend");
@@ -11,31 +11,32 @@ var exec = require("child_process").execSync;
 
 var platform;
 var extension;
+var modelName = "pub/users/dimitri/doxygen-%version%.%os%%extension%";
 
 if (process.platform == "freebsd") {
     throw "OS not supported by doxygen";
 } else if (process.platform == "darwin") {
-    platform = "";
+    modelName = "pub/users/dimitri/Doxygen-%version%%extension%";
     extension = ".dmg";
 } else if (process.platform == "linux") {
-    platform = ".linux";
+    platform = "linux";
     extension = ".bin.tar.gz";
 } else if (process.platform == "sunos") {
-    platform = ".solaris";
+    platform = "solaris";
     extension = ".bin.tar.gz";
 } else if (process.platform == "win32") {
     extension = ".bin.zip";
     if (process.arch == "x64") {
-        platform = ".windows.x64";
+        platform = "windows.x64";
     } else {
-        platform = ".windows";
+        platform = "windows";
     }
 }
 
 var defaultOptions = {
     hostName: "ftp.stack.nl",
-    fileName: "pub/users/dimitri/doxygen-%version%%os%%extension%",
-    version: "1.8.12",
+    fileName: modelName,
+    version: module.exports.defaultVersion,
     os: platform,
     extension: extension,
     protocol: "ftp"
@@ -151,9 +152,9 @@ function arrayToBuffer(parts) {
 
 function bufferToFile(buffer, filePath) {
     return new Promise(function (resolve, reject) {
-        fs.writeFile(filePath, buffer, "binary", function (err) {
-            if (err) {
-                reject(err);
+        fs.writeFile(filePath, buffer, "binary", function (error) {
+            if (error) {
+                reject(error);
             } else {
                 resolve();
             }
@@ -161,37 +162,40 @@ function bufferToFile(buffer, filePath) {
     });
 }
 
-function mountDMG(dmgFilePath) {
-    var dmg = require("dmg");
+function copyFileFromDmg(dmgFilePath, target) {
     return new Promise(function (resolve, reject) {
-        try {
-            dmg.mount(dmgFilePath, function (error, path) {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(path);
-                }
+        var readStream;
+        var writeStream;
+        var dmgMounted;
+
+        //Mount the dmg
+        var dmg = require("dmg");
+        dmg.mount(dmgFilePath, function (error, path) {
+            if (error) {
+                rejectCleanup(error);
+            } else {
+                dmgMounted = path;
+            }
+
+            readStream = fs.createReadStream(dmgMounted + "/doxygen");
+            readStream.on("error", rejectCleanup);
+            writeStream = fs.createWriteStream(target);
+            writeStream.on("error", rejectCleanup);
+            writeStream.on("finish", function () {
+                dmg.unmount(dmgFilePath, function () {
+                    resolve();
+                });
             });
-        }
-        catch (error) {
+            readStream.pipe(writeStream);
+
+        });
+
+        function rejectCleanup(error) {
+            readStream && readStream.destroy();
+            writeStream && writeStream.end();
+            dmgMounted && dmg.unmount(dmgFilePath);
             reject(error);
         }
-    });
-}
-
-function copyFile(source, target) {
-    return new Promise(function (resolve, reject) {
-        var rd = fs.createReadStream(source);
-        rd.on("error", rejectCleanup);
-        var wr = fs.createWriteStream(target);
-        wr.on("error", rejectCleanup);
-        function rejectCleanup(err) {
-            rd.destroy();
-            wr.end();
-            reject(err);
-        }
-        wr.on("finish", resolve);
-        rd.pipe(wr);
     });
 }
 
@@ -199,11 +203,7 @@ function unCompressFiles(buffer, versionRoute, isOSX) {
     if (isOSX) {
         return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
             function () {
-                return mountDMG(versionRoute + "/doxygen" + defaultOptions.extension).then(
-                    function (path) {
-                        return copyFile(path + "/doxygen", versionRoute);
-                    }
-                );
+                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension);
             }
         );
     }
