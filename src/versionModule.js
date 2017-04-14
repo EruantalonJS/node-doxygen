@@ -17,6 +17,7 @@ if (process.platform == "freebsd") {
     throw "OS not supported by doxygen";
 } else if (process.platform == "darwin") {
     modelName = "pub/users/dimitri/Doxygen-%version%%extension%";
+    platform = "macOS";
     extension = ".dmg";
 } else if (process.platform == "linux") {
     platform = "linux";
@@ -203,7 +204,7 @@ function unCompressFiles(buffer, versionRoute, isOSX) {
     if (isOSX) {
         return bufferToFile(buffer, versionRoute + "/doxygen" + defaultOptions.extension).then(
             function () {
-                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension);
+                return copyFileFromDmg(versionRoute + "/doxygen" + defaultOptions.extension, versionRoute + "/doxygen");
             }
         );
     }
@@ -254,7 +255,7 @@ function installVersion(userOptions) {
     return dataPromise.then(toArray)
         .then(arrayToBuffer)
         .then(function (buffer) {
-            return unCompressFiles(buffer, versionRoute, options.os == "");
+            return unCompressFiles(buffer, versionRoute, options.os == "macOS");
         })
         .then(function () {
             createConfigTemplate(versionRoute);
