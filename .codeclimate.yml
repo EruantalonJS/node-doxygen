@@ -4,11 +4,10 @@ engines:
     config:
       config: .eslintrc
   duplication:
-  	enabled: true
+    enabled: true
     config:
     	languages:
       - javascript
 ratings:
   paths:
   - "**.js"
-  

@@ -4,6 +4,7 @@ doxygen
 [![npm Package](https://img.shields.io/npm/v/doxygen.svg?style=flat-square)](https://www.npmjs.org/package/doxygen)
 [![Build Status](https://travis-ci.org/EruantalonJS/node-doxygen.svg?branch=master)](https://travis-ci.org/EruantalonJS/node-doxygen)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/xu8avh9iguwey4yh?svg=true)](https://ci.appveyor.com/project/EruantalonJS/node-doxygen)
+[![Code Climate](https://codeclimate.com/github/EruantalonJS/node-doxygen/badges/gpa.svg)](https://codeclimate.com/github/EruantalonJS/node-doxygen)
 
 Node wrapper for building [Doxygen](www.doxygen.org) documentation.
 
