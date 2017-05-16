@@ -1,18 +1,11 @@
 {
-  "name": "doxygen",
-  "version": "0.1.2",
   "author": "EruantalonJS",
-  "description": "node module for doxygen documentation",
-  "main": "index",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/EruantalonJS/node-doxygen.git"
+  "bin": {
+    "doxygen": "./bin/doxygen.js"
   },
-  "license": "MIT",
-  "keywords": [
-    "doxygen",
-    "documentation"
-  ],
+  "bugs": {
+    "url": "https://github.com/EruantalonJS/node-doxygen/issues"
+  },
   "engines": {
     "node": ">=4.0.0"
   },
@@ -21,16 +14,30 @@
     "dmg": "~0.1.0",
     "decompress": "~4.0.0",
     "extend": "~3.0.0",
+    "promise": "~7.1.1",
     "stream-to-array": "~2.3.0",
     "fs-extra": "~2.1.2"
   },
+  "description": "node module for doxygen documentation",
   "devDependencies": {
     "eslint": "~3.7.0",
-    "jasmine": "~2.5.2",
+    "jasmine": "~2.6.0",
     "rimraf": "~2.6.1"
+  },
+  "keywords": [
+    "doxygen",
+    "documentation"
+  ],
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "name": "doxygen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EruantalonJS/node-doxygen.git"
   },
   "scripts": {
     "lint": "eslint ./ --ignore-path .gitignore",
     "test": "jasmine"
-  }
+  },
+  "version": "0.2.0"
 }

@@ -1,4 +1,4 @@
-doxygen
+Doxygen
 ===========
 
 [![npm Package](https://img.shields.io/npm/v/doxygen.svg?style=flat-square)](https://www.npmjs.org/package/doxygen)
@@ -9,36 +9,51 @@ doxygen
 Node wrapper for building [Doxygen](www.doxygen.org) documentation.
 
 This module is not associated with [Doxygen](www.doxygen.org)
-##Setup
+## Setup
 
 `npm install doxygen`
 
 This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS
 
-##Examples of use
+## Usage samples
 
-Install the latest doxygen version from the default repository
+Downloads the latest doxygen version from the default repository
 
 ```javascript
 
 var doxygen = require('doxygen');
-doxygen.installVersion().then(function (data) {
+doxygen.downloadVersion().then(function (data) {
         doSomething();
 });
 
 ```
 
-Create a config file with some custom properties
+Create an empty config file(Takes all defaults):
+
+```javascript
+
+var doxygen = require('doxygen');
+var userOptions = {};
+
+doxygen.createConfig(userOptions);
+
+```
+
+Create a config file that includes js files:
 
 ```javascript
 
 var doxygen = require('doxygen');
 var userOptions = {
-    OUTPUT_DIRECTORY: "testDocs",
+    OUTPUT_DIRECTORY: "Docs",
     INPUT: "./",
     RECURSIVE: "YES",
-    EXCLUDE_PATTERNS: "*/node_modules/*"
+    FILE_PATTERNS: ["*.js", "*.md"],
+    EXTENSION_MAPPING: "js=Javascript",
+    GENERATE_LATEX: "NO",
+    EXCLUDE_PATTERNS: ["*/node_modules/*"]
 };
+
 doxygen.createConfig(userOptions);
 
 ```
