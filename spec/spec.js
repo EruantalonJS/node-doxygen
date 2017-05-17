@@ -21,7 +21,7 @@ describe("Download:", function () {
                 done();
                 done.fail(error);
             });
-    }, 300000);
+    }, 360000);
 
     it("HTTP", function (done) {
         doxygen.downloadVersion(null, "http").then(function () {
@@ -30,7 +30,7 @@ describe("Download:", function () {
             done();
             done.fail(error);
         });
-    }, 300000);
+    }, 360000);
 });
 
 
