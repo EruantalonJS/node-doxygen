@@ -35,6 +35,16 @@ describe("Download:", function () {
 
 
 describe("Generates the config:", function () {
+    beforeEach(function (done) {
+        rimraf("testResults", function (error) {
+            if (error) {
+                throw error;
+            } else {
+                done();
+            }
+        });
+    });
+
     it("Base scenario", function () {
         var userOptions = {
             OUTPUT_DIRECTORY: "testResults/Docs",
@@ -53,17 +63,6 @@ describe("Generates the config:", function () {
 });
 
 describe("Generates the docs:", function () {
-
-    beforeEach(function (done) {
-        rimraf("testResults/Docs", function (error) {
-            if (error) {
-                throw error;
-            } else {
-                done();
-            }
-        });
-    });
-
     it("Base scenario", function () {
         doxygen.run("testResults/config");
     });
