@@ -1,53 +1,69 @@
-describe("Doxygen version installer", function () {
-    var doxygen = require("../index");
-    var rimraf = require("rimraf");
+var doxygen = require("../index");
+var rimraf = require("rimraf");
 
-    beforeEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 240000;
-    });
-    it("Installs from ftp", function (done) {
-        rimraf("dist", function () {
-            rimraf("testDocs", function () {
-                doxygen.installVersion().then(function () {
-                    done();
-                }, function (error) {
-                    done.fail(error);
-                });
-            });
+describe("Download:", function () {
+    beforeEach(function (done) {
+        rimraf("dist", function (error) {
+            if (error) {
+                throw error;
+            } else {
+
+                done();
+            }
         });
     });
 
-    it("Installs from http", function (done) {
-        var httpOptions = {
-            protocol: "http"
-        };
-
-        rimraf("dist", function () {
-            rimraf("testDocs", function () {
-                doxygen.installVersion(httpOptions).then(function () {
-                    done();
-                }, function (error) {
-                    done.fail(error);
-                });
+    it("FTP", function (done) {
+        doxygen.downloadVersion()
+            .then(function () {
+                done();
+            }, function (error) {
+                done();
+                done.fail(error);
             });
+    }, 360000);
+
+    it("HTTP", function (done) {
+        doxygen.downloadVersion(null, "http").then(function () {
+            done();
+        }, function (error) {
+            done();
+            done.fail(error);
+        });
+    }, 360000);
+});
+
+
+describe("Generates the config:", function () {
+    beforeEach(function (done) {
+        rimraf("testResults", function (error) {
+            if (error) {
+                throw error;
+            } else {
+                done();
+            }
         });
     });
 
-    it("Generates the config", function () {
+    it("Base scenario", function () {
         var userOptions = {
-            OUTPUT_DIRECTORY: "testDocs",
+            OUTPUT_DIRECTORY: "testResults/Docs",
             INPUT: "./",
             RECURSIVE: "YES",
-            EXCLUDE_PATTERNS: "*/node_modules/*"
+            //WARN_IF_DOC_ERROR: "NO",
+            FILE_PATTERNS: ["*.js", "*.md"],
+            EXTENSION_MAPPING: "js=Javascript",
+            GENERATE_LATEX: "NO",
+            EXCLUDE_PATTERNS: ["*/node_modules/*", "*/filters/*"],
+            PROJECT_NAME: "Node-Doxygen",
+            USE_MDFILE_AS_MAINPAGE: "README.md"
         };
-        doxygen.createConfig(userOptions);
+        doxygen.createConfig(userOptions, "testResults/config");
     });
+});
 
-    it("Generates the docs", function () {
-        doxygen.run();
-    });
-
-    afterEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+describe("Generates the docs:", function () {
+    it("Base scenario", function () {
+        doxygen.run("testResults/config");
     });
 });
