@@ -1,8 +1,5 @@
 {
   "author": "EruantalonJS",
-  "bin": {
-    "doxygen": "./bin/doxygen.js"
-  },
   "bugs": {
     "url": "https://github.com/EruantalonJS/node-doxygen/issues"
   },
@@ -39,5 +36,5 @@
     "lint": "eslint ./ --ignore-path .gitignore",
     "test": "jasmine"
   },
-  "version": "0.2.0"
+  "version": "0.2.1"
 }
