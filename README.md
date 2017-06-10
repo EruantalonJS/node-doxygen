@@ -11,11 +11,15 @@ Node wrapper for building [Doxygen](www.doxygen.org) documentation.
 This module is not associated with [Doxygen](www.doxygen.org)
 ## Setup
 
+This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS. It supports both local and global installation
+
 `npm install doxygen`
 
-This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS
+or globally
 
-## Usage samples
+`npm install doxygen -g `
+
+## Invoking from a task
 
 Downloads the latest doxygen version from the default repository
 
@@ -66,3 +70,29 @@ var doxygen = require('doxygen');
 doxygen.run();
 
 ```
+
+## Invoking from CLI
+
+Downloads the latest doxygen version from the default repository
+
+`doxygen --download`
+
+Create a config file(Takes all defaults):
+
+`doxygen --config`
+
+Create a config file in a particular location(Takes all defaults):
+
+`doxygen --config --configPath=\path\to\file`
+
+Create a config file in a particular location, passing some parameters:
+
+`doxygen --config --configPath=\path\to\file --jsonParams={\"OUTPUT_DIRECTORY\":\"Docs\",\"INPUT\":\"./\",\"RECURSIVE\":\"YES\",\"FILE_PATTERNS\":[\"*.js\",\"*.md\"],\"EXTENSION_MAPPING\":\"js=Javascript\",\"GENERATE_LATEX\":\"NO\",\"EXCLUDE_PATTERNS\":[\"*/node_modules/*\"]}`
+
+Generate the documentation
+
+`doxygen --docs`
+
+Generate the documentation using a particular config file:
+
+`doxygen --docs --configPath=\path\to\file`

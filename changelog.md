@@ -27,3 +27,11 @@ Fixed: Doxygen's output will now be returned to console
 Added Documentation through JavaDoc comments
 Added Code Climate
 Running the Generate Documentation tests will now generate valid documentation of the project's code
+
+## 0.2.1
+
+Fixed: Error installing node-doxygen
+
+## 0.3
+
+Added CLI options
