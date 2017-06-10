@@ -81,7 +81,7 @@ describe("Generates the config:", function () {
         };
 
         exec("node ./bin/nodeDoxygen.js --config --jsonParams="
-            + JSON.stringify(userOptions).replace(/"/g, "\\\""), { stdio: ["pipe", process.stdout, "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)), { stdio: ["pipe", process.stdout, "pipe"] });
     });
 
     it("From CLI, with a custom config location", function () {
@@ -96,10 +96,8 @@ describe("Generates the config:", function () {
             PROJECT_NAME: "Node-Doxygen",
             USE_MDFILE_AS_MAINPAGE: "README.md"
         };
-        console.log("node ./bin/nodeDoxygen.js --config --configPath=testResults/config --jsonParams="
-            + JSON.stringify(userOptions));
         exec("node ./bin/nodeDoxygen.js --config --configPath=testResults/config --jsonParams="
-            + JSON.stringify(userOptions).replace(/"/g, "\\\""), { stdio: ["pipe", process.stdout, "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)), { stdio: ["pipe", process.stdout, "pipe"] });
     });
 });
 
