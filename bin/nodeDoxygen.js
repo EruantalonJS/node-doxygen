@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var doxygen = require("../lib/nodeDoxygen");
-var fs = require('fs');
 
 var doxygenParams = process.argv.slice(2);
 var operation = "docs";
@@ -11,39 +10,41 @@ var params;
 var version;
 
 for (var i = 0; i < doxygenParams.length; i++) {
-    if (doxygenParams[i].startsWith('--jsonParams=')) {
+    console.log(doxygenParams[i]);
+    if (doxygenParams[i].startsWith("--jsonParams=")) {
+        console.log(doxygenParams[i].substring(13));
         params = JSON.parse(doxygenParams[i].substring(13));
     }
-    else if (doxygenParams[i].startsWith('--configPath=')) {
+    else if (doxygenParams[i].startsWith("--configPath=")) {
         configPath = doxygenParams[i].substring(13);
     }
-    else if (doxygenParams[i].startsWith('--version=')) {
+    else if (doxygenParams[i].startsWith("--version=")) {
         version = doxygenParams[i].substring(10);
     }
-    else if (doxygenParams[i] == '--config') {
+    else if (doxygenParams[i] == "--config") {
         if (operationSet) {
-            console.log("Option --config ignored: Only one command can be executed at the same time");
+            console.warn("Option --config ignored: Only one command can be executed at the same time");
         }
         else {
             operationSet = true;
-            operation = "config"
+            operation = "config";
         }
 
-    } else if (doxygenParams[i] == '--download') {
+    } else if (doxygenParams[i] == "--download") {
         if (operationSet) {
-            console.log("Option --download ignored: Only one command can be executed at the same time");
+            console.warn("Option --download ignored: Only one command can be executed at the same time");
         }
         else {
             operationSet = true;
-            operation = "download"
+            operation = "download";
         }
-    } else if (doxygenParams[i] == '--docs') {
+    } else if (doxygenParams[i] == "--docs") {
         if (operationSet) {
-            console.log("Option --docs ignored: Only one command can be executed at the same time");
+            console.warn("Option --docs ignored: Only one command can be executed at the same time");
         }
         else {
             operationSet = true;
-            operation = "docs"
+            operation = "docs";
         }
     }
 }
