@@ -1,5 +1,8 @@
 {
   "author": "EruantalonJS",
+  "bin": {
+    "doxygen": "./bin/nodeDoxygen.js"
+  },
   "bugs": {
     "url": "https://github.com/EruantalonJS/node-doxygen/issues"
   },
@@ -23,10 +26,12 @@
   },
   "keywords": [
     "doxygen",
-    "documentation"
+    "documentation",
+    "automation",
+    "wrapper"
   ],
   "license": "MIT",
-  "main": "./lib/index.js",
+  "main": "./lib/nodeDoxygen.js",
   "name": "doxygen",
   "repository": {
     "type": "git",
@@ -36,5 +41,5 @@
     "lint": "eslint ./ --ignore-path .gitignore",
     "test": "jasmine"
   },
-  "version": "0.2.1"
+  "version": "0.3.0"
 }
