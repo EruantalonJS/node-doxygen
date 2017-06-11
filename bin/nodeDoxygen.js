@@ -10,9 +10,7 @@ var params;
 var version;
 
 for (var i = 0; i < doxygenParams.length; i++) {
-    console.log(doxygenParams[i]);
     if (doxygenParams[i].startsWith("--jsonParams=")) {
-        console.log(doxygenParams[i].substring(13));
         params = JSON.parse(doxygenParams[i].substring(13));
     }
     else if (doxygenParams[i].startsWith("--configPath=")) {
