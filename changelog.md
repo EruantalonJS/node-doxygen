@@ -35,3 +35,8 @@ Fixed: Error installing node-doxygen
 ## 0.3
 
 Added CLI options
+
+## 0.3.1
+
+Config now supports an array of inputs. 
+Added a function to check whether (a version of) doxygen is installed
