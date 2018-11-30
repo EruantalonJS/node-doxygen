@@ -16,7 +16,7 @@ for (var i = 0; i < doxygenParams.length; i++) {
     if (currentParamEqualIndex  === -1){
         currentOption = currentParam;
     } else {
-        currentOption = currentParam.substring(0, currentParamEqualIndex - 1);
+        currentOption = currentParam.substring(0, currentParamEqualIndex);
     }
 
     switch(currentOption){
