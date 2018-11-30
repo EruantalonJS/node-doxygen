@@ -13,8 +13,7 @@ for (var i = 0; i < doxygenParams.length; i++) {
     var currentParam = doxygenParams[i];
     var currentParamEqualIndex = currentParam.indexOf("=");
     var currentOption;
-
-    if (currentParamEqualIndex  !== -1){
+    if (currentParamEqualIndex  === -1){
         currentOption = currentParam;
     } else {
         currentOption = currentParam.substring(0, currentParamEqualIndex - 1);
