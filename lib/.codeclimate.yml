@@ -2,4 +2,4 @@ version: "2"         # required to adjust maintainability checks
 checks:
 method-complexity:
     config:
-    threshold: 8
+        threshold: 8
