@@ -64,6 +64,6 @@ function selectOperation(operationName){
     }
     else {
         operationSet = true;
-        operation = "operationName";
+        operation = operationName;
     }
 }
