@@ -2,6 +2,7 @@
 node_modules
 dist
 testResults
+coverage
 
 # Files
 *.log
