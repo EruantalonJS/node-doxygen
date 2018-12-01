@@ -6,8 +6,6 @@ language: node_js
 os:
   - linux
   - osx
-compiler:
-  - clang
 node_js:
   - "4"
   - "6"
@@ -19,6 +17,7 @@ before_install:
 install:
   - npm install
 script:
+  - apt-cache depends doxygen
   - npm run test
   - npm run coverage
 after_script:
