@@ -21,7 +21,7 @@ script:
   - npm run test
   - npm run coverage
 after_script:
-  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.frontend.json coverage/lcov.info  # Format frontend coverage
+  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/lcov.info  # Format frontend coverage
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
 git:
   depth: 10
