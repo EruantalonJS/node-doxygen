@@ -103,7 +103,7 @@ describe("Generates the config:", function () {
 
 describe("Generates the docs:", function () {
     beforeAll(function (done) {
-        doxygen.downloadVersion()
+        doxygen.downloadVersion("1.8.13")
             .then(function () {
                 done();
             }, function (error) {
