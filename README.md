@@ -3,12 +3,12 @@ Doxygen
 
 [![npm Package](https://img.shields.io/npm/v/doxygen.svg?style=flat-square)](https://www.npmjs.org/package/doxygen)
 [![Build Status](https://travis-ci.org/EruantalonJS/node-doxygen.svg?branch=master)](https://travis-ci.org/EruantalonJS/node-doxygen)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/xu8avh9iguwey4yh?svg=true)](https://ci.appveyor.com/project/EruantalonJS/node-doxygen)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/xu8avh9iguwey4yh/branch/master?svg=true)](https://ci.appveyor.com/project/EruantalonJS/node-doxygen/branch/master)
 [![Code Climate](https://codeclimate.com/github/EruantalonJS/node-doxygen/badges/gpa.svg)](https://codeclimate.com/github/EruantalonJS/node-doxygen)
 
-Node wrapper for building [Doxygen](www.doxygen.org) documentation.
+Node wrapper for building [Doxygen](https://www.doxygen.org) documentation.
 
-This module is not associated with [Doxygen](www.doxygen.org)
+This module is not associated with [Doxygen](https://www.doxygen.org)
 ## Setup
 
 This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS. It supports both local and global installation

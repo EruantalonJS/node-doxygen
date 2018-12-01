@@ -103,7 +103,7 @@ describe("Generates the config:", function () {
 
 describe("Generates the docs:", function () {
     beforeAll(function (done) {
-        doxygen.downloadVersion()
+        doxygen.downloadVersion("1.8.13")
             .then(function () {
                 done();
             }, function (error) {
@@ -122,18 +122,18 @@ describe("Generates the docs:", function () {
     });
 
     it("From a task, with a custom config location", function () {
-        doxygen.run("testResults/config");
+        doxygen.run("testResults/config", "1.8.13");
     });
 
     it("From a task, with the default config location", function () {
-        doxygen.run();
+        doxygen.run(null, "1.8.13");
     });
 
     it("From CLI, with a custom config location", function () {
-        exec("node ./bin/nodeDoxygen.js --docs --configPath=testResults/config", { stdio: ["pipe", process.stdout, "pipe"] });
+        exec("node ./bin/nodeDoxygen.js --docs --version=1.8.13 --configPath=testResults/config", { stdio: ["pipe", process.stdout, "pipe"] });
     });
 
     it("From CLI, with the default config location", function () {
-        exec("node ./bin/nodeDoxygen.js --docs", { stdio: ["pipe", process.stdout, "pipe"] });
+        exec("node ./bin/nodeDoxygen.js --docs --version=1.8.13", { stdio: ["pipe", process.stdout, "pipe"] });
     });
 });
