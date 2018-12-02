@@ -7,6 +7,9 @@ os:
   - linux
   - osx
   - windows
+cache:
+  directories:
+    - coverageResults
 node_js:
   - "4"
   - "6"
@@ -21,7 +24,13 @@ script:
   - npm run test
   - npm run coverage
 after_script:
-  - ./cc-test-reporter format-coverage -t lcov -o coverage/codeclimate.json coverage/lcov.info  # Format frontend coverage
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter format-coverage -t lcov -o coverageResults/codeclimate."$TRAVIS_JOB_NUMBER".json coverage/lcov.info; fi # If the tests are succesfull store the results
+jobs:
+  include:
+    - stage: upload test results
+      node_js: 10
+      script:
+        - ./cc-test-reporter sum-coverage coverageResults/codeclimate.*.json -p 2           # Sum both coverage parts into coverage/codeclimate.json
+        - ./cc-test-reporter upload-coverage                                                # Upload coverage/codeclimate.json
 git:
   depth: 10
