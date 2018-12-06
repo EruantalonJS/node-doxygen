@@ -20,7 +20,7 @@ install:
 script:
   - npm run test
   - npm run coverage
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then cp coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info fi # If the tests are successful store the results
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then cp coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info; fi # If the tests are successful store the results
 after_script:
   - ls coverageResults
 jobs:
