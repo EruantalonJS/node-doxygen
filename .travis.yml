@@ -24,7 +24,8 @@ script:
   - npm run test
   - npm run coverage
 after_script:
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter format-coverage -t lcov -o coverageResults/codeclimate."$TRAVIS_JOB_NUMBER".json coverage/lcov.info; fi # If the tests are succesfull store the results
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter format-coverage -t lcov -o coverageResults/codeclimate.$TRAVIS_JOB_NUMBER.json coverage/lcov.info; fi # If the tests are succesfull store the results
+  - ls coverageResults
 jobs:
   include:
     - stage: upload test results
