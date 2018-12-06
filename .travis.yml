@@ -24,14 +24,13 @@ script:
   - npm run test
   - npm run coverage
 after_script:
-  - echo coverageResults/codeclimate."$TRAVIS_JOB_NUMBER".json
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then echo coverageResults/codeclimate."$TRAVIS_JOB_NUMBER".json; fi
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter format-coverage -t lcov -o coverageResults/codeclimate."$TRAVIS_JOB_NUMBER".json coverage/lcov.info; fi # If the tests are succesfull store the results
 jobs:
   include:
     - stage: upload test results
       node_js: 10
       script:
+        - ls coverageResults
         - ./cc-test-reporter sum-coverage coverageResults/codeclimate.*.json -p 12           # Sum all coverage parts into coverage/codeclimate.json
         - ./cc-test-reporter upload-coverage                                                # Upload coverage/codeclimate.json
 git:
