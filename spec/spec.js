@@ -35,6 +35,7 @@ var exec = require("child_process").execSync;
 });*/
 
 
+
 describe("Generates the config:", function () {
 
     it("From a task, with the default config location", function () {
@@ -101,39 +102,44 @@ describe("Generates the config:", function () {
     });
 });
 
-describe("Generates the docs:", function () {
-    beforeAll(function (done) {
-        doxygen.downloadVersion("1.8.13")
-            .then(function () {
-                done();
-            }, function (error) {
-                throw error;
+var testVersions = ["1.8.20", "1.9.1"];
+
+testVersions.forEach(version => {
+    describe("Generates the docs(" + version + "):", function () {
+    
+        beforeAll(function (done) {
+            doxygen.downloadVersion(version)
+                .then(function () {
+                    done();
+                }, function (error) {
+                    throw error;
+                });
+        }, 360000);
+    
+        beforeEach(function (done) {
+            rimraf("testResults/Docs", function (error) {
+                if (error) {
+                    throw error;
+                } else {
+                    done();
+                }
             });
-    }, 360000);
-
-    beforeEach(function (done) {
-        rimraf("testResults/Docs", function (error) {
-            if (error) {
-                throw error;
-            } else {
-                done();
-            }
         });
-    });
-
-    it("From a task, with a custom config location", function () {
-        doxygen.run("testResults/config", "1.8.13");
-    });
-
-    it("From a task, with the default config location", function () {
-        doxygen.run(null, "1.8.13");
-    });
-
-    it("From CLI, with a custom config location", function () {
-        exec("node ./bin/nodeDoxygen.js --docs --version=1.8.13 --configPath=testResults/config", { stdio: ["pipe", process.stdout, "pipe"] });
-    });
-
-    it("From CLI, with the default config location", function () {
-        exec("node ./bin/nodeDoxygen.js --docs --version=1.8.13", { stdio: ["pipe", process.stdout, "pipe"] });
+    
+        it("From a task, with a custom config location", function () {
+            doxygen.run("testResults/config", version);
+        });
+    
+        it("From a task, with the default config location", function () {
+            doxygen.run(null, version);
+        });
+    
+        it("From CLI, with a custom config location", function () {
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version + " --configPath=testResults/config", { stdio: ["pipe", process.stdout, "pipe"] });
+        });
+    
+        it("From CLI, with the default config location", function () {
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version , { stdio: ["pipe", process.stdout, "pipe"] });
+        });
     });
 });
