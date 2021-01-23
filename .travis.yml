@@ -10,10 +10,9 @@ os:
 cache:
   npm
 node_js:
-  - "4"
-  - "6"
-  - "8"
   - "10"
+  - "12"
+  - "14"
 install:
   - npm install
 script:

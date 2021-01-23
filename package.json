@@ -10,7 +10,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "decompress": "~4.0.0",
+    "decompress": "^4.2.1",
     "dmg": "~0.1.0",
     "extend": "~3.0.0",
     "fs-extra": "~2.1.2",
@@ -20,10 +20,10 @@
   },
   "description": "node module for doxygen documentation",
   "devDependencies": {
-    "eslint": "~3.7.0",
-    "istanbul": "^0.4.5",
+    "eslint": "^7.18.0",
+    "nyc": "^15.1.0",
     "jasmine": "~2.6.0",
-    "rimraf": "~2.6.1"
+    "rimraf": "^2.7.1"
   },
   "keywords": [
     "doxygen",
@@ -41,7 +41,7 @@
   "scripts": {
     "lint": "eslint ./ --ignore-path .gitignore",
     "test": "jasmine",
-    "coverage": "istanbul cover node_modules/jasmine/bin/jasmine.js spec/spec.js"
+    "coverage": "nyc --reporter=lcov node_modules/jasmine/bin/jasmine.js spec/spec.js && nyc merge .nyc_output coverage/coverage.json"
   },
-  "version": "0.3.2"
+  "version": "0.4.0"
 }
