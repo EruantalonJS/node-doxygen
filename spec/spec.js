@@ -126,6 +126,10 @@ testVersions.forEach(version => {
             });
         });
     
+        it("From a task, detect that the version is installed", function () {
+            expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(true);
+        });
+    
         it("From a task, with a custom config location", function () {
             doxygen.run("testResults/config", version);
         });

@@ -5,6 +5,9 @@ sudo: false
 language: node_js
 os:
   - linux
+  apt:
+    packages:
+      - clang-9
   - osx
   - windows
 cache:
