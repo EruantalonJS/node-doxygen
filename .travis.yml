@@ -19,7 +19,8 @@ jobs:
       addons:
         apt:
           packages:
-            - clang-9
+            - clang-6
+            - llvm-9-dev
 install:
   - npm install
 script:
