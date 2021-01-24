@@ -20,7 +20,7 @@ jobs:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-xenial-9
+            - llvm-toolchain-9
           packages:
             - clang-9
       env:
