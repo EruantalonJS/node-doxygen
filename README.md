@@ -10,7 +10,9 @@ Node wrapper for building [Doxygen](https://www.doxygen.org) documentation.
 This module is not associated with [Doxygen](https://www.doxygen.org)
 ## Setup
 
-This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS. It supports both local and global installation
+This module is a wrapper around Doxygen, to automate the installation and generation of doxygen documentation so that it can be easily included in any project build. Supports Linux, Windows, and MacOS. It supports both local and global installation. 
+
+In the case of linux, it may require clang to be installed (Versions vary depending on the doxygen version chosen)
 
 `npm install doxygen`
 
