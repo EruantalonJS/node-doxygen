@@ -2,19 +2,37 @@ env:
   global:
     - CC_TEST_REPORTER_ID=a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
 language: node_js
-os: windows
-node_js:
-  - "10"
-  - "12"
-  - "14"
+os: linux
+dist: focal
 jobs:
   include:
+    - os: windows
+      node_js: 10
+    - os: windows
+      node_js: 14
+    - os: windows
+      node_js: 12
+      workspaces:
+        create:
+          name: windows
+          paths:
+            - ./coverage
     - os: osx
       osx_image: xcode12.2
-      node_js: 14
+      node_js: 12
+      workspaces:
+        create:
+          name: osx
+          paths:
+            - ./coverage
     - os: linux
       dist: focal
-      node_js: 14
+      node_js: 12
+      workspaces:
+        create:
+          name: linux
+          paths:
+            - ./coverage
       addons:
         apt:
           sources:
@@ -23,9 +41,30 @@ jobs:
           packages:
           - clang-9
           - libclang1-9
+    - stage: upload test results
+      before_install:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+      node_js: 12
+      workspaces:
+        use:
+          - linux
+          - osx
+          - windows
+      script:
+        - mkdir coverageResults
+        - >- 
+          var=0;
+          for fileName in coverage/*.info; do
+              var=$((var + 1));
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+          done # for each codecoverage report, format it
+        - ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
+        - ./cc-test-reporter upload-coverage                         # Upload coverage/codeclimate.json
 install:
   - npm install
 script:
   - npm run coverage
+  - mv coverage/lcov.info ./coverage/lcov.${TRAVIS_JOB_NUMBER}.info
 git:
   depth: 10
