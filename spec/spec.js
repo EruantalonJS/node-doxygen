@@ -102,7 +102,7 @@ describe("Generates the config:", function () {
     });
 });
 
-var testVersions = ["1.8.17", "1.8.18","1.8.20", "1.9.1"];
+var testVersions = ["1.8.19", "1.8.20", "1.9.1"];
 
 testVersions.forEach(version => {
     describe("Generates the docs(" + version + "):", function () {
