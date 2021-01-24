@@ -1,7 +1,6 @@
 env:
   global:
     - CC_TEST_REPORTER_ID=a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
-sudo: false
 language: node_js
 os:
   - linux
@@ -9,10 +8,15 @@ os:
     packages:
       - clang-9
   - osx
+  osx_image: xcode12.2
   - windows
 cache:
   npm
 node_js:
+  - "10"
+  - "12"
+  - "14"
+env:
   - "10"
   - "12"
   - "14"
