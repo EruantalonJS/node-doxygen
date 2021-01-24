@@ -62,8 +62,8 @@ jobs:
         - ./cc-test-reporter upload-coverage                         # Upload coverage/codeclimate.json
 install:
   - npm install
-  - mv coverage/lcov.info coverage/lcov.$TRAVIS_JOB_NUMBER.info
 script:
   - npm run coverage
+  - mv coverage/lcov.info coverage/lcov.$TRAVIS_JOB_NUMBER.info
 git:
   depth: 10
