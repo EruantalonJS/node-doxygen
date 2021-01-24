@@ -18,9 +18,11 @@ jobs:
       node_js: "14"
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-9
           packages:
             - clang-9
-            - llvm-9-dev
 install:
   - npm install
 script:
