@@ -17,7 +17,13 @@ jobs:
     - os: linux
       dist: bionic
       node_js: 14
-      addons: *clang9
+      addons:
+        apt:
+          sources:
+          - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+            key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+          packages:
+          - clang-9
     - stage: upload test results
       before_install:
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
