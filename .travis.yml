@@ -2,6 +2,22 @@ env:
   global:
     - CC_TEST_REPORTER_ID=a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
 language: node_js
+os: linux
+dist: focal
+node_js: 14
+workspaces:
+  create:
+    name: linux
+    paths:
+      - coverage
+addons:
+  apt:
+    sources:
+    - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main'
+      key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
+    packages:
+    - clang-9
+    - libclang1-9
 jobs:
   include:
     - os: windows
@@ -23,25 +39,8 @@ jobs:
           name: osx
           paths:
             - coverage
-    - os: linux
-      dist: focal
-      node_js: 14
-      workspaces:
-        create:
-          name: linux
-          paths:
-            - coverage
-      addons:
-        apt:
-          sources:
-          - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-9 main'
-            key_url: https://apt.llvm.org/llvm-snapshot.gpg.key
-          packages:
-          - clang-9
-          - libclang1-9
     - stage: upload test results
       before_install:
-        - openssl aes-256-cbc -K $encrypted_13687a44e26f_key -iv $encrypted_13687a44e26f_iv -in GCS\ keyfile.json.enc -out GCS\ keyfile.json -d
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         - chmod +x ./cc-test-reporter
       node_js: 14
