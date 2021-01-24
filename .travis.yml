@@ -10,16 +10,16 @@ node_js:
   - "12"
   - "14"
 jobs:
-include:
-  - os: osx
-    osx_image: xcode12.2
-    node_js: "14"
-  - os: linux
-    node_js: "14"
-    addons:
-      apt:
-        packages:
-          - clang-9
+  include:
+    - os: osx
+      osx_image: xcode12.2
+      node_js: "14"
+    - os: linux
+      node_js: "14"
+      addons:
+        apt:
+          packages:
+            - clang-9
 install:
   - npm install
 script:
