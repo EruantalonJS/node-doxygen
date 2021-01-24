@@ -15,15 +15,9 @@ jobs:
       osx_image: xcode12.2
       node_js: "14"
     - os: linux
+      dist: bionic
       node_js: "14"
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages:
-            - clang-9
+      addons: *clang9
 install:
   - npm install
 script:
