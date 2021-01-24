@@ -23,6 +23,8 @@ jobs:
             - llvm-toolchain-xenial-9
           packages:
             - clang-9
+      env:
+        - CC=clang-9
 install:
   - npm install
 script:
