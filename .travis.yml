@@ -24,7 +24,6 @@ jobs:
 install:
   - npm install
 script:
-  - npm run test
   - npm run coverage
 # - >- if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; 
 #      then
