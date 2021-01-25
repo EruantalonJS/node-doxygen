@@ -65,6 +65,9 @@ install:
   - npm install
 script:
   - npm run coverage
-  - mv coverage/lcov.info ./coverage/lcov.${TRAVIS_JOB_NUMBER}.info
+  - echo "${TRAVIS_JOB_NUMBER}"
+  - echo "$TRAVIS_JOB_NUMBER"
+  - echo $TRAVIS_JOB_NUMBER
+  - mv coverage/lcov.info "./coverage/lcov.$TRAVIS_JOB_NUMBER.info"
 git:
   depth: 10
