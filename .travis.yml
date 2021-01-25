@@ -69,5 +69,6 @@ script:
   - echo "$TRAVIS_JOB_NUMBER"
   - echo $TRAVIS_JOB_NUMBER
   - mv coverage/lcov.info "./coverage/lcov.$TRAVIS_JOB_NUMBER.info"
+  - ls ./coverage
 git:
   depth: 10
