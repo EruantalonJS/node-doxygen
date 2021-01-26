@@ -16,7 +16,7 @@ jobs:
         create:
           name: windows
           paths:
-            - ./coverage
+            - /coverage
     - os: osx
       osx_image: xcode12.2
       node_js: 12
@@ -24,7 +24,7 @@ jobs:
         create:
           name: osx
           paths:
-            - ./coverage
+            - /coverage
     - os: linux
       dist: focal
       node_js: 12
@@ -32,7 +32,7 @@ jobs:
         create:
           name: linux
           paths:
-            - ./coverage
+            - /coverage
       addons:
         apt:
           sources:
@@ -55,9 +55,9 @@ jobs:
         - mkdir coverageResults
         - >- 
           var=0;
-          for fileName in coverage/*.info; do
+          for fileName in /coverage/*.info; do
               var=$((var + 1));
-              echo fileName;
+              echo $fileName;
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
         - ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
@@ -66,10 +66,6 @@ install:
   - npm install
 script:
   - npm run coverage
-  - echo "${TRAVIS_JOB_NUMBER}"
-  - echo "$TRAVIS_JOB_NUMBER"
-  - echo $TRAVIS_JOB_NUMBER
-  - mv coverage/lcov.info "./coverage/lcov.$TRAVIS_JOB_NUMBER.info"
-  - ls ./coverage
+  - mv coverage/lcov.info "/coverage/lcov.$TRAVIS_JOB_NUMBER.info"
 git:
   depth: 10
