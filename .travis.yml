@@ -57,7 +57,6 @@ jobs:
           var=0;
           for fileName in /coverage/*.info; do
               var=$((var + 1));
-              echo $fileName;
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
         - ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
@@ -66,6 +65,7 @@ install:
   - npm install
 script:
   - npm run coverage
+  - mkdir /coverage
   - mv coverage/lcov.info "/coverage/lcov.$TRAVIS_JOB_NUMBER.info"
 git:
   depth: 10
