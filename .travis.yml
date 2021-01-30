@@ -50,9 +50,9 @@ jobs:
           - windows
       script:
         - mkdir coverage
-        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C coverage
-        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C coverage
-        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C coverage
+        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C coverage --transform='s/.*\///'
         - ls -d "coverage"
         - >- 
           var=0;
