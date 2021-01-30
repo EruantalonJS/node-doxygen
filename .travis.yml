@@ -51,6 +51,9 @@ jobs:
       script:
         - mkdir coverage
         - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C coverage
+        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C coverage
+        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C coverage
+        - ls -d "coverage"
         - >- 
           var=0;
           for fileName in coverage/*.info; do
