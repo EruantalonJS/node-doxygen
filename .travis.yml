@@ -49,9 +49,11 @@ jobs:
           - osx
           - windows
       script:
+        - mkdir coverage
+        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C coverage
         - >- 
           var=0;
-          for fileName in coverageResults/*.info; do
+          for fileName in coverage/*.info; do
               var=$((var + 1));
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
@@ -61,8 +63,7 @@ install:
   - npm install
 script:
   - npm run coverage
-  - mkdir $HOME/coverageResults
-  - mv coverage/lcov.info $HOME/coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
-  - mv $HOME/coverageResults coverageResults
+  - mkdir coverageResults
+  - mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
 git:
   depth: 10
