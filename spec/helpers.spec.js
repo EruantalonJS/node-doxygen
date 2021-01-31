@@ -6,17 +6,15 @@ describe("Downloads a file:", function () {
             .then(function () {
                 done();
             }, function (error) {
-                done();
                 done.fail(error);
             });
     }, 36000);
 
     it("Using ftp", function (done) {
-        helpers.ftpDownload("speedtest:speedtest@ftp.otenet.gr","test1Mb.db")
+        helpers.ftpDownload("ftp.otenet.gr","test1Mb.db", "speedtest", "speedtest")
         .then(function () {
             done();
         }, function (error) {
-            done();
             done.fail(error);
         });
     }, 36000);
