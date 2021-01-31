@@ -50,13 +50,13 @@ jobs:
           - windows
       script:
         - mkdir coverage
-        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C coverage --transform='s/.*\///'
-        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C coverage --transform='s/.*\///'
-        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C coverage --transform='s/.*\///'
-        - ls -d "coverage"
+        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - ls -d ./coverage
         - >- 
           var=0;
-          for fileName in coverage/*.info; do
+          for fileName in ./coverage/*.info; do
               var=$((var + 1));
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
