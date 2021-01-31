@@ -15,24 +15,21 @@ jobs:
       workspaces:
         create:
           name: windows
-          paths:
-            - ./coverage
+          paths: coverageResults
     - os: osx
       osx_image: xcode12.2
       node_js: 12
       workspaces:
         create:
           name: osx
-          paths:
-            - ./coverage
+          paths: coverageResults
     - os: linux
       dist: focal
       node_js: 12
       workspaces:
         create:
           name: linux
-          paths:
-            - ./coverage
+          paths: coverageResults
       addons:
         apt:
           sources:
@@ -52,10 +49,14 @@ jobs:
           - osx
           - windows
       script:
-        - mkdir coverageResults
+        - mkdir coverage
+        - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C ./coverage --transform='s/.*\///'
+        - ls -d ./coverage
         - >- 
           var=0;
-          for fileName in coverage/*.info; do
+          for fileName in ./coverage/*.info; do
               var=$((var + 1));
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
@@ -65,6 +66,7 @@ install:
   - npm install
 script:
   - npm run coverage
-  - mv coverage/lcov.info ./coverage/lcov.${TRAVIS_JOB_NUMBER}.info
+  - mkdir coverageResults
+  - mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
 git:
   depth: 10
