@@ -53,13 +53,14 @@ jobs:
         - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C ./coverage --transform='s/.*\///'
         - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C ./coverage --transform='s/.*\///'
         - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C ./coverage --transform='s/.*\///'
-        - ls -d ./coverage
+        - tree coverage
         - >- 
           var=0;
           for fileName in ./coverage/*.info; do
               var=$((var + 1));
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
+        - tree
         - ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
         - ./cc-test-reporter upload-coverage                         # Upload coverage/codeclimate.json
 install:
