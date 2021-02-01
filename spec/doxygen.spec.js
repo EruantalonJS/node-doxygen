@@ -48,8 +48,7 @@ describe("Generates the config:", function () {
         };
 
         exec("node ./bin/nodeDoxygen.js --config --jsonParams="
-            + JSON.stringify(JSON.stringify(userOptions)), 
-            { stdio: ["pipe", 'ignore', "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)));
     });
 
     it("From CLI, with a custom config location", function () {
@@ -65,8 +64,7 @@ describe("Generates the config:", function () {
             USE_MDFILE_AS_MAINPAGE: "README.md"
         };
         exec("node ./bin/nodeDoxygen.js --config --configPath=testResults/config --jsonParams="
-            + JSON.stringify(JSON.stringify(userOptions)), 
-            { stdio: ["pipe", 'ignore', "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)));
     });
 });
 
@@ -88,7 +86,7 @@ testVersions.forEach(version => {
             expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(false);
         });
 
-        it("The version should install without errors", function () {
+        it("The version should install without errors", function (done) {
             doxygen.downloadVersion(version)
                 .then(function () {
                     done();
@@ -118,8 +116,7 @@ testVersions.forEach(version => {
         });
 
         it("The version should install without errors", function () {
-            exec("node ./bin/nodeDoxygen.js --download --version=" + version, 
-            { stdio: ["pipe", 'ignore', "pipe"] });
+            exec("node ./bin/nodeDoxygen.js --download --version=" + version);
         }, 36000);
     
         it("The version should be installed after installing", function () {
@@ -147,13 +144,11 @@ testVersions.forEach(version => {
         });
     
         it("From CLI, with a custom config location", function () {
-            exec("node ./bin/nodeDoxygen.js --docs --version=" + version + " --configPath=testResults/config", 
-            { stdio: ["pipe", 'ignore', "pipe"] });
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version + " --configPath=testResults/config");
         });
     
         it("From CLI, with the default config location", function () {
-            exec("node ./bin/nodeDoxygen.js --docs --version=" + version, 
-            { stdio: ["pipe", 'ignore', "pipe"] });
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version);
         });
     });
 });
