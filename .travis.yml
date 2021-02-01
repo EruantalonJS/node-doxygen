@@ -53,7 +53,7 @@ jobs:
         - tar -xPzf ${CASHER_DIR}/linux-fetch.tgz  -C ./coverage --transform='s/.*\///'
         - tar -xPzf ${CASHER_DIR}/osx-fetch.tgz  -C ./coverage --transform='s/.*\///'
         - tar -xPzf ${CASHER_DIR}/windows-fetch.tgz  -C ./coverage --transform='s/.*\///'
-        - tree coverage
+        - ls -R coverage
         - >- 
           var=0;
           for fileName in ./coverage/*.info; do
