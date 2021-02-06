@@ -40,11 +40,11 @@ jobs:
     needs: build
     steps:
       - run: mkdir coverage
+      - uses: actions/checkout@v2
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
         with:
           path: ./coverage
-      - uses: actions/checkout@v2
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       - run: ls -R
