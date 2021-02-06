@@ -41,7 +41,7 @@
   "scripts": {
     "lint": "eslint ./ --ignore-path .gitignore",
     "test": "jasmine",
-    "coverage": "nyc --reporter=lcov node_modules/jasmine/bin/jasmine.js spec/spec.js && nyc merge .nyc_output coverage/coverage.json"
+    "coverage": "nyc --reporter=lcov node_modules/jasmine/bin/jasmine.js spec/doxygen.spec.js spec/helpers.spec.js && nyc merge .nyc_output coverage/coverage.json"
   },
   "version": "0.4.0"
 }
