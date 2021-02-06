@@ -49,12 +49,12 @@ jobs:
           path: ./coverage
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
-      - run: ls -R
       - run: >- 
           $index = 0;
           foreach ($f in Get-ChildItem -Recurse -Path "coverage" -Filter *.info) { 
             $index = $index +1; 
             ./cc-test-reporter format-coverage -t lcov -o codeclimate.$index.json $f.FullName;
           } # for each codecoverage report, format it
+      - run: ls -R
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   

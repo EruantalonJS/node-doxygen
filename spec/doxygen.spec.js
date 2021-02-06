@@ -71,7 +71,7 @@ describe("Generates the config:", function () {
 var testVersions = ["1.8.20", "1.9.1"];
 
 testVersions.forEach(version => {
-    describe("Downloads a version from a task(" + version + "):", function () {
+    describe("Downloads a version from a task(" + version + ") onto the default location:", function () {
         beforeAll(function (done) {
             rimraf("dist", function (error) {
                 if (error) {
@@ -100,7 +100,7 @@ testVersions.forEach(version => {
         });
     });
 
-    describe("Downloads a version from CLI(" + version + "):", function () {
+    describe("Downloads a version from CLI(" + version + ") onto the default location:", function () {
         beforeAll(function (done) {
             rimraf("dist", function (error) {
                 if (error) {
