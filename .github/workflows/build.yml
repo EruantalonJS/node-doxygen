@@ -32,6 +32,3 @@ jobs:
         with:
           name: linux-coverage-${{ matrix.os }}-${{ matrix.node }}
           path: coverageResults
-        
-        
-        
