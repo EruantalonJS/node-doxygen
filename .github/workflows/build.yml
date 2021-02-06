@@ -7,6 +7,7 @@ on:
   push:
     branches:
     - main
+    - main-githubactions-ivan
   pull_request:
     branches:
     - main
