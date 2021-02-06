@@ -22,13 +22,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - name: npm install, build, and test
       - run: npm install
       - run: npm run coverage
       - run: mkdir coverageResults
       - run: mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
-      - name: Archive code coverage results - ${{ matrix.os }} - ${{ matrix.node }}
-        uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
-          name: linux-coverage-${{ matrix.os }}-${{ matrix.node }}
+          name: "linux-coverage-${{ matrix.os }}-${{ matrix.node }}""
           path: coverageResults
