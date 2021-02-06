@@ -17,6 +17,7 @@ jobs:
     strategy:
       matrix:
         node: [10, 12, 14]
+        os: [ubuntu-latest, windows-latest, osx-latest]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -30,3 +31,20 @@ jobs:
         with:
           name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
           path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
+  upload-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v2
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+        - >- 
+          var=0;
+          for fileName in ./**/*.info; do
+              var=$((var + 1));
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+          done # for each codecoverage report, format it
+        - ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
+        - ./cc-test-reporter upload-coverage   
