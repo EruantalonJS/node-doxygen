@@ -28,5 +28,5 @@ jobs:
       - run: mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
       - uses: actions/upload-artifact@v2
         with:
-          name: "linux-coverage-${{ matrix.os }}-${{ matrix.node }}""
+          name: "${{ matrix.os }}-coverage-${{ matrix.node }}""
           path: coverageResults
