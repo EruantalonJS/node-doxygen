@@ -41,18 +41,15 @@ jobs:
     env:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
     steps:
-      - run: mkdir coverage
       - uses: actions/checkout@v2
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
-        with:
-          path: ./coverage
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       - run: ls -R
       - run: >- 
           var=0;
-          for fileName in ./coverage/*/*.info; do
+          for fileName in ./*/*.info; do
               var=$((var + 1));
               echo $fileName;
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
