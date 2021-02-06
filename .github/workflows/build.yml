@@ -1,0 +1,49 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  push:
+    branches:
+    - main
+    - main-githubactions-ivan
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: [10, 12, 14]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: npm run coverage
+      - run: mkdir coverageResults
+      - run: mv coverage/lcov.info coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
+      - uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
+          path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
+  upload-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v2
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: >- 
+          var=0;
+          for fileName in ./**/*.info; do
+              var=$((var + 1));
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+          done # for each codecoverage report, format it
+      - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
+      - run: ./cc-test-reporter upload-coverage   
