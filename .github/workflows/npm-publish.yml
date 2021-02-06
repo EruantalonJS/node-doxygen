@@ -1,0 +1,37 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: [10, 12, 14]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: npm install, build, and test
+      - run: npm install
+      - run: npm run coverage
+      - run: mkdir coverageResults
+      - run: mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
+      - name: Archive code coverage results - ${{ matrix.os }} - ${{ matrix.node }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-coverage-${{ matrix.os }}-${{ matrix.node }}
+          path: coverageResults
+        
+        
+        
