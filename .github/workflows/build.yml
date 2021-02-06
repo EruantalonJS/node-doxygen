@@ -50,10 +50,10 @@ jobs:
       - run: ls -R
       - run: >- 
           var=0;
-          for fileName in ./coverage/*/lcov.*.info; do
-              echo $fileName
-              var=$((var + 1));
-              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+          for %fileName in (./coverage/*/lcov.*.info) do
+              echo %fileName;
+              set var=%var + 1;
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.%var.json %fileName;
           done # for each codecoverage report, format it
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   
