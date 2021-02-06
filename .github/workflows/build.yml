@@ -6,20 +6,23 @@ name: Node.js Package
 on:
   push:
     branches:
-    - main
-    - main-githubactions-ivan
+    - master
   pull_request:
     branches:
-    - main
-
+    - master
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         node: [10, 12, 14]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-20.04, windows-latest, macos-latest]
     steps:
+      - if: ${{ matrix.os == 'ubuntu-20.04'}} 
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
+          sudo add-apt-repository 'deb http://apt.llvm.org/focal llvm-toolchain-focal-10 main' -y
+          sudo apt-get install clang-9 libclang1-9
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
@@ -33,17 +36,25 @@ jobs:
           name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
           path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
   upload-coverage:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    needs: build
+    env:
+      CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
     steps:
+      - run: mkdir coverage
+      - uses: actions/checkout@v2
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
+        with:
+          path: ./coverage
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
+      - run: ls -R
       - run: >- 
-          var=0;
-          for fileName in ./**/*.info; do
-              var=$((var + 1));
-              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
-          done # for each codecoverage report, format it
+          $index = 0;
+          foreach ($f in Get-ChildItem -Recurse -Path "coverage" -Filter *.info) { 
+            $index = $index +1; 
+            ./cc-test-reporter format-coverage -t lcov -o codeclimate.$index.json $f.FullName;
+          } # for each codecoverage report, format it
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   
