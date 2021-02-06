@@ -2,7 +2,7 @@ Doxygen
 ===========
 
 [![npm Package](https://img.shields.io/npm/v/doxygen.svg?style=flat-square)](https://www.npmjs.org/package/doxygen)
-[![Build Status](https://github.com/EruantalonJS/node-doxygen/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/EruantalonJS/node-doxygen/actions?query=workflow%3A%22Node.js+Package%22)
+[![Build Status](https://github.com/EruantalonJS/node-doxygen/workflows/CI%20Build/badge.svg)](https://github.com/EruantalonJS/node-doxygen/actions?query=workflow%3A%22CI+Build%22)
 [![Code Climate](https://codeclimate.com/github/EruantalonJS/node-doxygen/badges/gpa.svg)](https://codeclimate.com/github/EruantalonJS/node-doxygen)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fdf3669cb9c21ff97eb4/test_coverage)](https://codeclimate.com/github/EruantalonJS/node-doxygen/test_coverage)
 

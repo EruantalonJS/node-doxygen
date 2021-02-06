@@ -54,6 +54,7 @@ jobs:
           var=0;
           for fileName in ./coverage/*/*.info; do
               var=$((var + 1));
+              echo $fileName;
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
       - run: ls -R
