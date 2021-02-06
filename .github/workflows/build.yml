@@ -42,7 +42,8 @@ jobs:
       - run: mkdir coverage
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
-        path: ./coverage
+        with:
+          path: ./coverage
       - uses: actions/checkout@v2
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
