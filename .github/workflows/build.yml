@@ -36,7 +36,7 @@ jobs:
           name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
           path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
   upload-coverage:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     env:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
@@ -49,12 +49,12 @@ jobs:
           path: ./coverage
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
-      - run: >- 
-          $index = 0;
-          foreach ($f in Get-ChildItem -Recurse -Path "coverage" -Filter *.info) { 
-            $index = $index +1; 
-            ./cc-test-reporter format-coverage -t lcov -o codeclimate.$index.json $f.FullName;
-          } # for each codecoverage report, format it
+      - run: - >- 
+          var=0;
+          for fileName in ./coverage/*.info; do
+              var=$((var + 1));
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+          done # for each codecoverage report, format it
       - run: ls -R
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   
