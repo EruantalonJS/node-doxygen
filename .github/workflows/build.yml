@@ -6,12 +6,10 @@ name: Node.js Package
 on:
   push:
     branches:
-    - main
-    - main-githubactions-ivan
+    - master
   pull_request:
     branches:
-    - main
-
+    - master
 jobs:
   build:
     runs-on: ${{ matrix.os }}
