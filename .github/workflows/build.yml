@@ -47,9 +47,11 @@ jobs:
       - uses: actions/checkout@v2
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
+      - run: ls -R
       - run: >- 
           var=0;
           for fileName in ./coverage/*/lcov.*.info; do
+              echo $fileName
               var=$((var + 1));
               ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
