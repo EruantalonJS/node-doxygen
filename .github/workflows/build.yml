@@ -25,8 +25,8 @@ jobs:
       - run: npm install
       - run: npm run coverage
       - run: mkdir coverageResults
-      - run: mv coverage/lcov.info coverageResults/lcov.$TRAVIS_JOB_NUMBER.info
+      - run: mv coverage/lcov.info coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
       - uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
-          path: coverageResults
+          path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
