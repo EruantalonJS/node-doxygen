@@ -48,9 +48,9 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: mv ./*/lcov.*.info ./
       - run: find -name 'lcov.windows-*.info' | xargs sed -i 's/\\/\//g'
-      - if: ${{ GITHUB_EVENT_NAME  != 'pull_request'}} 
+      - if: github.event_name != 'pull_request'
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      - if: ${{ GITHUB_EVENT_NAME  == 'pull_request'}} 
+      - if: github.event_name == 'pull_request'
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
       - run: >- 
           var=0;
