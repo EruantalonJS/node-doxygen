@@ -48,11 +48,15 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: mv ./*/lcov.*.info ./
       - run: find -name 'lcov.windows-*.info' | xargs sed -i 's/\\/\//g'
+      - if: ${{ GITHUB_EVENT_NAME  != 'pull_request'}} 
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - if: ${{ GITHUB_EVENT_NAME  == 'pull_request'}} 
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
       - run: >- 
           var=0;
           for fileName in ./lcov.*.info; do
               var=$((var + 1));
-              GIT_BRANCH=$GITHUB_REF GIT_COMMIT_SHA=$GITHUB_SHA ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+              GIT_BRANCH=$branch GIT_COMMIT_SHA=$GITHUB_SHA ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   
