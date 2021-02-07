@@ -2,40 +2,6 @@ var doxygen = require("../lib/nodeDoxygen");
 var rimraf = require("rimraf");
 var exec = require("child_process").execSync;
 
-/*describe("Download:", function () {
-    beforeEach(function (done) {
-        rimraf("dist", function (error) {
-            if (error) {
-                throw error;
-            } else {
-
-                done();
-            }
-        });
-    });
-
-    it("FTP", function (done) {
-        doxygen.downloadVersion()
-            .then(function () {
-                done();
-            }, function (error) {
-                done();
-                done.fail(error);
-            });
-    }, 360000);
-
-    it("HTTP", function (done) {
-        doxygen.downloadVersion(null, "http").then(function () {
-            done();
-        }, function (error) {
-            done();
-            done.fail(error);
-        });
-    }, 360000);
-});*/
-
-
-
 describe("Generates the config:", function () {
 
     it("From a task, with the default config location", function () {
@@ -82,7 +48,7 @@ describe("Generates the config:", function () {
         };
 
         exec("node ./bin/nodeDoxygen.js --config --jsonParams="
-            + JSON.stringify(JSON.stringify(userOptions)), { stdio: ["pipe", process.stdout, "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)));
     });
 
     it("From CLI, with a custom config location", function () {
@@ -98,52 +64,91 @@ describe("Generates the config:", function () {
             USE_MDFILE_AS_MAINPAGE: "README.md"
         };
         exec("node ./bin/nodeDoxygen.js --config --configPath=testResults/config --jsonParams="
-            + JSON.stringify(JSON.stringify(userOptions)), { stdio: ["pipe", process.stdout, "pipe"] });
+            + JSON.stringify(JSON.stringify(userOptions)));
     });
 });
 
 var testVersions = ["1.8.20", "1.9.1"];
 
 testVersions.forEach(version => {
-    describe("Generates the docs(" + version + "):", function () {
-    
+    describe("Downloads a version from a task(" + version + ") onto the default location:", function () {
         beforeAll(function (done) {
+            rimraf("dist", function (error) {
+                if (error) {
+                    done.fail(error);
+                } else {
+                    done();
+                }
+            });
+        }, 30000);
+
+        it("The version should not be installed before installing", function () {
+            expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(false);
+        });
+
+        it("The version should install without errors", function (done) {
             doxygen.downloadVersion(version)
                 .then(function () {
                     done();
                 }, function (error) {
-                    throw error;
+                    done.fail(error);
                 });
-        }, 360000);
+        }, 60000);
     
-        beforeEach(function (done) {
-            rimraf("testResults/Docs", function (error) {
+        it("The version should be installed after installing", function () {
+            expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(true);
+        });
+    });
+
+    describe("Downloads a version from CLI(" + version + ") onto the default location:", function () {
+        beforeAll(function (done) {
+            rimraf("dist", function (error) {
                 if (error) {
-                    throw error;
+                    done.fail(error);
                 } else {
                     done();
                 }
             });
         });
+
+        it("The version should not be installed before installing", function () {
+            expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(false);
+        });
+
+        it("The version should install without errors", function () {
+            exec("node ./bin/nodeDoxygen.js --download --version=" + version);
+        }, 60000);
     
-        it("From a task, detect that the version is installed", function () {
+        it("The version should be installed after installing", function () {
             expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(true);
         });
+    });
+
+    describe("Generates the docs(" + version + "):", function () {
+        beforeEach(function (done) {
+            rimraf("testResults/Docs", function (error) {
+                if (error) {
+                    done.fail(error);
+                } else {
+                    done();
+                }
+            });
+        }, 30000);
     
-        it("From a task, with a custom config location", function () {
+        it("The documentation should be generated with a custom config location", function () {
             doxygen.run("testResults/config", version);
         });
     
-        it("From a task, with the default config location", function () {
+        it("The documentation should be generated with the default config location", function () {
             doxygen.run(null, version);
         });
     
         it("From CLI, with a custom config location", function () {
-            exec("node ./bin/nodeDoxygen.js --docs --version=" + version + " --configPath=testResults/config", { stdio: ["pipe", process.stdout, "pipe"] });
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version + " --configPath=testResults/config");
         });
     
         it("From CLI, with the default config location", function () {
-            exec("node ./bin/nodeDoxygen.js --docs --version=" + version , { stdio: ["pipe", process.stdout, "pipe"] });
+            exec("node ./bin/nodeDoxygen.js --docs --version=" + version);
         });
     });
 });

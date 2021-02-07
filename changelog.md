@@ -40,3 +40,7 @@ Added CLI options
 
 Config now supports an array of inputs. 
 Added a function to check whether (a version of) doxygen is installed
+
+## 0.4
+
+Fixed version detection in windows

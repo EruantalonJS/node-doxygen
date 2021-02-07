@@ -2,7 +2,13 @@
 node_modules
 dist
 testResults
+coverage
+.nyc_output
 
 # Files
 *.log
 /config
+package-lock.json
+
+# Package configurations
+*.yml
