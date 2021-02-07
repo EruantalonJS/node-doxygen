@@ -80,7 +80,7 @@ testVersions.forEach(version => {
                     done();
                 }
             });
-        }, 36000);
+        }, 30000);
 
         it("The version should not be installed before installing", function () {
             expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(false);
@@ -93,7 +93,7 @@ testVersions.forEach(version => {
                 }, function (error) {
                     done.fail(error);
                 });
-        }, 36000);
+        }, 60000);
     
         it("The version should be installed after installing", function () {
             expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(true);
@@ -117,7 +117,7 @@ testVersions.forEach(version => {
 
         it("The version should install without errors", function () {
             exec("node ./bin/nodeDoxygen.js --download --version=" + version);
-        }, 36000);
+        }, 60000);
     
         it("The version should be installed after installing", function () {
             expect(doxygen.isDoxygenExecutableInstalled(version)).toBe(true);
@@ -133,7 +133,7 @@ testVersions.forEach(version => {
                     done();
                 }
             });
-        }, 36000);
+        }, 30000);
     
         it("The documentation should be generated with a custom config location", function () {
             doxygen.run("testResults/config", version);

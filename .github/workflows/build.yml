@@ -47,14 +47,13 @@ jobs:
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       - run: mv ./*/lcov.*.info ./
-      - run: find -name 'lcov.windows.*.info' | xargs sed -i 's/\\/\//g'
+      - run: find -name lcov.windows-*.info | xargs sed -i 's/\\/\//g'
       - run: >- 
           var=0;
           for fileName in ./lcov.*.info; do
               var=$((var + 1));
               echo $fileName;
-              ./cc-test-reporter format-coverage  --debug -t lcov -o codeclimate.$var.json $fileName;
+              ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
           done # for each codecoverage report, format it
-      - run: ls -R
       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
       - run: ./cc-test-reporter upload-coverage   
