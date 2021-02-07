@@ -49,8 +49,8 @@ jobs:
       - if: github.event_name == 'pull_request'
         run: |
           echo "GIT_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
-          echo ${{ context.payload.pull_request?.['head']?.['sha'] }}
-          echo "GIT_COMMIT_SHA=${{ context.payload.pull_request?.['head']?.['sha'] }}" >> $GITHUB_ENV
+          echo ${ context.payload.pull_request?.['head']?.['sha'] }
+          echo "GIT_COMMIT_SHA=${ context.payload.pull_request?.['head']?.['sha'] }" >> $GITHUB_ENV
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
