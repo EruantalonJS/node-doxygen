@@ -51,7 +51,7 @@ jobs:
       - if: github.event_name != 'pull_request'
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - if: github.event_name == 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
       - run: >- 
           var=0;
           for fileName in ./lcov.*.info; do
