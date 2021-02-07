@@ -1,7 +1,67 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
 
-name: CI Build
+# name: CI Build
+
+# on:
+#   push:
+#     branches:
+#     - master
+#   pull_request:
+#     branches:
+#     - master
+# jobs:
+#   build:
+#     runs-on: ${{ matrix.os }}
+#     strategy:
+#       matrix:
+#         node: [10, 12, 14]
+#         os: [ubuntu-20.04, windows-latest, macos-latest]
+#     steps:
+#       - if: ${{ matrix.os == 'ubuntu-20.04'}} 
+#         run: |
+#           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
+#           sudo add-apt-repository 'deb http://apt.llvm.org/focal llvm-toolchain-focal-10 main' -y
+#           sudo apt-get install clang-9 libclang1-9
+#       - uses: actions/checkout@v2
+#       - uses: actions/setup-node@v1
+#         with:
+#           node-version: ${{ matrix.node }}
+#       - run: npm install
+#       - run: npm run coverage
+#       - run: mkdir coverageResults
+#       - run: mv coverage/lcov.info coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
+#           path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
+#   upload-coverage:
+#     runs-on: ubuntu-latest
+#     needs: build
+#     env:
+#       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Download all workflow run artifacts
+#         uses: actions/download-artifact@v2
+#       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+#       - run: chmod +x ./cc-test-reporter
+#       - run: mv ./*/lcov.*.info ./
+#       - run: find -name 'lcov.windows-*.info' | xargs sed -i 's/\\/\//g'
+#       - if: github.event_name != 'pull_request'
+#         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+#       - if: github.event_name == 'pull_request'
+#         run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
+#       - run: >- 
+#           var=0;
+#           for fileName in ./lcov.*.info; do
+#               var=$((var + 1));
+#               GIT_BRANCH=$branch GIT_COMMIT_SHA=$GITHUB_SHA ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
+#           done # for each codecoverage report, format it
+#       - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
+#       - run: ./cc-test-reporter upload-coverage   
+
+name: CI Tests
 
 on:
   push:
@@ -11,52 +71,18 @@ on:
     branches:
     - master
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        node: [10, 12, 14]
-        os: [ubuntu-20.04, windows-latest, macos-latest]
-    steps:
-      - if: ${{ matrix.os == 'ubuntu-20.04'}} 
-        run: |
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key 2>/dev/null | sudo apt-key add -
-          sudo add-apt-repository 'deb http://apt.llvm.org/focal llvm-toolchain-focal-10 main' -y
-          sudo apt-get install clang-9 libclang1-9
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - run: npm install
-      - run: npm run coverage
-      - run: mkdir coverageResults
-      - run: mv coverage/lcov.info coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
-      - uses: actions/upload-artifact@v2
-        with:
-          name: "${{ matrix.os }}-coverage-${{ matrix.node }}"
-          path: coverageResults/lcov.${{ matrix.os }}.${{ matrix.node }}.info
-  upload-coverage:
+  ci_tests:
     runs-on: ubuntu-latest
-    needs: build
     env:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
     steps:
       - uses: actions/checkout@v2
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v2
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: mv ./*/lcov.*.info ./
-      - run: find -name 'lcov.windows-*.info' | xargs sed -i 's/\\/\//g'
-      - if: github.event_name != 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - run: echo ${GITHUB_REF}"
+      - run: echo ${GITHUB_REF#refs/heads/}"
+      - run: echo ${GITHUB_BASE_REF}"
+      - run: echo ${GITHUB_HEAD_REF}"
+      - run: echo ${github.ref}"
+      - run: echo ${github.base_ref}"
+      - run: echo ${github.head_ref}"
       - if: github.event_name == 'pull_request'
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
-      - run: >- 
-          var=0;
-          for fileName in ./lcov.*.info; do
-              var=$((var + 1));
-              GIT_BRANCH=$branch GIT_COMMIT_SHA=$GITHUB_SHA ./cc-test-reporter format-coverage -t lcov -o codeclimate.$var.json $fileName;
-          done # for each codecoverage report, format it
-      - run: ./cc-test-reporter sum-coverage codeclimate.*.json         # Sum all coverage parts into coverage/codeclimate.json
-      - run: ./cc-test-reporter upload-coverage   
