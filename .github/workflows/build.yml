@@ -75,12 +75,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
+      GIT_BRANCH: "${{ github.event_name != 'pull_request' && github.ref#refs/heads/ || github.head_ref }}"
+      GIT_COMMIT_SHA: "${{ github.sha }}"
     steps:
       - uses: actions/checkout@v2
-      - if: github.event_name != 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      - if: github.event_name == 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
-      - run: echo "##[set-output name=commit;]$(echo ${GITHUB_SHA})"
-      - run: echo ${{ branch }}
-      - run: echo ${{ commit }} 
+      - run: echo ${GIT_BRANCH}
+      - run: echo ${GIT_COMMIT_SHA}
