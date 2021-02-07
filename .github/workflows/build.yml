@@ -78,9 +78,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - if: github.event_name != 'pull_request'
-        run: echo "::set-env name=GIT_BRANCH::${GITHUB_REF#refs/heads/}"
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - if: github.event_name == 'pull_request'
-        run: echo "::set-env name=GIT_BRANCH::${GITHUB_HEAD_REF}"
-      - run: echo "::set-env name=GIT_COMMIT_SHA::${GITHUB_SHA}"
-      - run: echo ${GIT_BRANCH}
-      - run: echo ${GITHUB_SHA}
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
+      - run: echo "##[set-output name=commit;]$(echo ${GITHUB_SHA})"
+      - run: echo ${{ branch }}
+      - run: echo ${{ commit }} 
