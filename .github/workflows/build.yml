@@ -77,12 +77,12 @@ jobs:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
     steps:
       - uses: actions/checkout@v2
-      - run: echo ${GITHUB_REF}"
-      - run: echo ${GITHUB_REF#refs/heads/}"
-      - run: echo ${GITHUB_BASE_REF}"
-      - run: echo ${GITHUB_HEAD_REF}"
-      - run: echo ${github.ref}"
-      - run: echo ${github.base_ref}"
-      - run: echo ${github.head_ref}"
+      - run: echo ${GITHUB_REF}
+      - run: echo ${GITHUB_REF#refs/heads/}
+      - run: echo ${GITHUB_BASE_REF}
+      - run: echo ${GITHUB_HEAD_REF}
+      - run: echo ${github.ref}
+      - run: echo ${github.base_ref}
+      - run: echo ${github.head_ref}
       - if: github.event_name == 'pull_request'
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
