@@ -41,7 +41,6 @@ jobs:
       CC_TEST_REPORTER_ID: a2c04c8e76935f673eb91042f9a19d37d03bc74940956beec70b7d9386cb43f1
     steps:
       - uses: actions/checkout@v2
-      - run: echo ${GIT_BRANCH}
       - if: github.event_name != 'pull_request'
         run: |
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -49,18 +48,13 @@ jobs:
       - if: github.event_name == 'pull_request'
         run: |
           echo "GIT_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
-          echo ${{ github.event.pull_request.head.sha }}
-         # echo "GIT_COMMIT_SHA=${ github.event.pull_request.head.sha }" >> $GITHUB_ENV
+          echo "GIT_COMMIT_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v2
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       - run: mv ./*/lcov.*.info ./
       - run: find -name 'lcov.windows-*.info' | xargs sed -i 's/\\/\//g'
-      - if: github.event_name != 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      - if: github.event_name == 'pull_request'
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
       - run: >- 
           var=0;
           for fileName in ./lcov.*.info; do
